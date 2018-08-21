@@ -1,0 +1,82 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+google.charts.load('current', {'packages':['gantt']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Task ID');
+      data.addColumn('string', 'Task Name');
+      data.addColumn('string', 'Resource');
+      data.addColumn('date', 'Start Date');
+      data.addColumn('date', 'End Date');
+      data.addColumn('number', 'Duration');
+      data.addColumn('number', 'Percent Complete');
+      data.addColumn('string', 'Dependencies');
+    	// I sorted the books by author to make it less confusing.
+      // Subtract month dates by one
+      data.addRows([
+        ['cursor', 'Today', '...',
+         new Date(2018, 5, 17), new Date(2018, 7, 21), null, 100, null],
+        ['UdemyPython', 'Python Course', 'Course',
+         new Date(2018, 5, 17), new Date(2018, 7, 12), null, 100, null],
+        ['IntroJava1', 'Heaton – Phase One', 'Reading',
+         new Date(2018, 6, 22), new Date(2018, 7, 19), null, 5, null],
+        ['IntroNeural1', 'Krose – Fundamentals', 'Reading',
+         new Date(2018, 6, 22), new Date(2018, 6, 29), null, 0, null],
+        ['FastAI', 'Fast.ai Course', 'Course',
+         new Date(2018, 7, 12), new Date(2018, 8, 30), null, 0, null],
+        ['Gale', 'Science in Context', 'Reading',
+         new Date(2018, 7, 12), new Date(2018, 7, 19), null, 0, null],
+        ['SimplePres', 'Simple Presentation', 'Assignment',
+         new Date(2018, 7, 12), new Date(2018, 8, 16), null, 0, null],
+        ['NNandDL', 'NNs and Deep Learning', 'Reading',
+         new Date(2018, 7, 19), new Date(2018, 8, 16), null, 0, null],
+        ['IntroNeural2', 'Krose – Theory', 'Reading',
+         new Date(2018, 7, 19), new Date(2018, 8, 9), null, 0, null],
+        ['IntroJava2', 'Heaton – Phase Two', 'Reading',
+         new Date(2018, 7, 26), new Date(2018, 8, 23), null, 0, null],
+        ['DLOverview1', 'Schmidhuber – Intro', 'Reading',
+         new Date(2018, 8, 2), new Date(2018, 8, 9), null, 0, null],
+        ['VisRecog', 'Recognition NN', 'Assignment',
+         new Date(2018, 8, 9), new Date(2018, 9, 21), null, 0, null],
+        ['IntroNeural3', 'Krose – Applications', 'Reading',
+         new Date(2018, 8, 16), new Date(2018, 8, 23), null, 0, null],
+        ['Emerge1', 'Downing – ANNs', 'Reading',
+         new Date(2018, 8, 30), new Date(2018, 9, 28), null, 0, null],
+        ['Fund1', 'Fausett – Introduction', 'Reading',
+         new Date(2018, 8, 30), new Date(2018, 9, 7), null, 0, null],
+        ['LearnPath', 'Introductory Learning Path', 'Assignment',
+         new Date(2018, 8, 30), new Date(2018, 9, 28), null, 0, null],
+        ['FinalPres', 'Final Presentation', 'Assignment',
+         new Date(2018, 8, 30), new Date(2018, 11, 2), null, 0, null],
+        ['Fund2', 'Fausett – Simple NNs', 'Reading',
+         new Date(2018, 9, 7), new Date(2018, 9, 28), null, 0, null],
+        ['DLOverview2', 'Schmidhuber – Supervised NNs', 'Reading',
+         new Date(2018, 9, 21), new Date(2018, 9, 28), null, 0, null],
+        ['Fund3', 'Fausett – Pattern Association', 'Reading',
+         new Date(2018, 9, 28), new Date(2018, 10, 11), null, 0, null],
+        ['Fund4', 'Fausett – Backpropogation NN', 'Reading',
+         new Date(2018, 9, 28), new Date(2018, 10, 4), null, 0, null],
+        ['ETAL1', 'Glorot and Downing', 'Reading',
+         new Date(2018, 10, 4), new Date(2018, 10, 11), null, 0, null],
+        ['ETAL2', 'Abu-Mostafa, Schmmidhuber, & Badar', 'Reading',
+         new Date(2018, 10, 11), new Date(2018, 10, 18), null, 0, null],
+        ['ETAL3', 'Ripley and Downing', 'Reading',
+         new Date(2018, 10, 18), new Date(2018, 10, 25), null, 0, null],
+        ['ETAL4', 'Heaton, Schmmidhuber, & Downing', 'Reading',
+         new Date(2018, 10, 25), new Date(2018, 11, 2), null, 0, null],
+        ['Backprop', 'Backpropogation ANN', 'Assignment',
+         new Date(2018, 9, 21), new Date(2018, 11, 2), null, 0, null]
+      ]);
+      var options = {
+        height: 800,
+        width: 1000,
+        gantt: {
+          trackHeight: 30
+        }
+      };
+      var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
+      chart.draw(data, options);
+    }
+</script>
+<div id="chart_div"></div>
