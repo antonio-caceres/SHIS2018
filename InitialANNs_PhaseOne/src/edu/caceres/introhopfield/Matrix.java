@@ -1,7 +1,5 @@
 package edu.caceres.introhopfield;
 
-import com.sun.org.apache.xalan.internal.xsltc.dom.MatchingIterator;
-
 import java.io.Serializable;
 
 public class Matrix implements Cloneable, Serializable {
