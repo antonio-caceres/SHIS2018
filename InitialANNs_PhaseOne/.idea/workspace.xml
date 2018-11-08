@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ddd214c0-7d38-45b2-8f65-b9e70da21ba1" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/edu/caceres/introhopfield/HopfieldApp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/edu/caceres/introhopfield/HopfieldApplet.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/edu/caceres/introhopfield/HopfieldNetworkTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/caceres/introhopfield/HopfieldNetworkTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/edu/caceres/introhopfield/Matrix.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/edu/caceres/introhopfield/Matrix.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../HopfieldNN/.idea/workspace.xml" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -61,13 +57,14 @@
     <session id="88040258">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="6" />
+          <entry key="project.closed" value="7" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.12" value="2" />
           <entry key="project.open.time.13" value="1" />
           <entry key="project.open.time.16" value="1" />
           <entry key="project.open.time.2" value="1" />
-          <entry key="project.opened" value="6" />
+          <entry key="project.open.time.24" value="1" />
+          <entry key="project.opened" value="7" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
@@ -101,8 +98,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/edu/caceres/introhopfield/HopfieldApp.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="395">
-              <caret line="39" selection-start-line="39" selection-end-line="39" />
+            <state relative-caret-position="170">
+              <caret line="24" selection-start-line="24" selection-end-line="25" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -187,6 +184,7 @@
     </navigator>
     <panes>
       <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -209,7 +207,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -404,8 +401,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/edu/caceres/introhopfield/HopfieldApp.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="395">
-          <caret line="39" selection-start-line="39" selection-end-line="39" />
+        <state relative-caret-position="170">
+          <caret line="24" selection-start-line="24" selection-end-line="25" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
