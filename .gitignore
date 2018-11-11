@@ -1,9 +1,12 @@
-#General
+# General
 .DS_Store
 .AppleDouble
 .LSOverride
 
-#IntelliJ
+# IntelliJ
 .idea/
 out/
 *.iml
+
+# Python
+__pycache__

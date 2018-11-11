@@ -6,20 +6,21 @@ class NeuralNet:
     bias_matrices = []
     learning_rate = 1
 
-    def __init__(self, neuron_layers, learning_rate):
+    def __init__(self, neuron_layers, learning_rate = 1):
         """
         Generate a neural network with a specified number of layers and neurons.
         :param neuron_layers: list of integers representing the number of neurons in each layer.
+        :param learning_rate: learning rate of the neural network
         """
         self.weight_matrices = []
         self.bias_matrices = []
         for i in range(len(neuron_layers) - 1):
             weight_matrix = []
             for r in range(neuron_layers[i + 1]):
-                weight_matrix.append(np.random.ranf(neuron_layers[i]))
+                weight_matrix.append(np.random.ranf(neuron_layers[i])) # TODO: add negative chance
             weight_matrix = np.matrix(weight_matrix)
             self.weight_matrices.append(weight_matrix)
-            self.bias_matrices.append(np.matrix(np.random.ranf(neuron_layers[i+1])))
+            self.bias_matrices.append(np.matrix(np.random.ranf(neuron_layers[i+1])))  # TODO: add negative chance
         self.learning_rate = learning_rate
 
     def process_input(self, input_list):
@@ -29,39 +30,20 @@ class NeuralNet:
         :return: matrix of the output layer with given input
         """
         output = input_list
-        for i in range(len(self.weight_matrices)-1):
+        for i in range(len(self.weight_matrices)):
             output = NeuralNet.sigmoid(self.weight_matrices[i] * output + self.bias_matrices[i].transpose())
         return output
 
-    def stochastic_training_input(self, inputs, expected_outputs):
+    def stochastic_training_input(self, input_outputs, num_epochs, mini_batch_size):
         """
         Run several iterations of the training process, backpropagating at the end
-        :param inputs: a list of inputs to be processed using stochastic gradient descent.
-        :param expected_outputs: a list of expected outputs associated with the inputs.
+        :param input_outputs: a list of tuples of inputs and their expected outputs
+        :param num_epochs: the number of times to train batches
+        :param mini_batch_size: the size of batches to use.
         :return: None
         """
-        delta = 0
-        for i in inputs:
-            delta += (np.linalg.norm(expected_outputs[i] - self.process_input(i)))**2
-        delta /= 2*len(inputs)
-        # finish stochastic training
-
-
-    @staticmethod
-    def sigmoid_matrix(matrix):
-        new_matrix = []
-        for r in range(len(matrix)):
-            new_matrix.append([])
-            for c in range(len(matrix)):
-                new_matrix[r].append(NeuralNet.sigmoid(matrix[r][c]))
-        return new_matrix
+        pass  # to finish one training path
 
     @staticmethod
     def sigmoid(x):
         return 1 / (1 + np.exp(-x))
-
-
-if __name__ == "__main__":
-    a = NeuralNet([4, 3, 5])
-    input_matrix = (np.matrix([1, 1, 1, 1])).transpose()
-    print(a.process_input(input_matrix))
