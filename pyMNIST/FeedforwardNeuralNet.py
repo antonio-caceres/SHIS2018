@@ -47,3 +47,12 @@ class NeuralNet:
     @staticmethod
     def sigmoid(x):
         return 1 / (1 + np.exp(-x))
+
+    @staticmethod
+    def der_sigmoid(sig_x):
+        """
+        Compute the derivative of sigmoid(x) at x with the value of sigmoid(x).
+        :param sig_x: takes the result of NeuralNet.sigmoid(x) to compute the derivative of sigmoid(x) at x.
+        :return: the derivative of the sigmoid function at the x-value of x given the value of sigmoid(x).
+        """
+        return sig_x * (1 - sig_x)
