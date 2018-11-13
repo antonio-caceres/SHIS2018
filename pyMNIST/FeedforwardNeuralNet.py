@@ -18,9 +18,9 @@ class NeuralNet:
             weight_matrix = []
             for r in range(neuron_layers[i + 1]):
                 weight_matrix.append(np.random.uniform(-1, 1, neuron_layers[i]))
-            weight_matrix = np.matrix(weight_matrix)
+            weight_matrix = np.array(weight_matrix)
             self.weight_matrices.append(weight_matrix)
-            self.bias_matrices.append(np.matrix(np.random.uniform(-1, 1, neuron_layers[i+1])))
+            self.bias_matrices.append(np.array(np.random.uniform(-1, 1, neuron_layers[i+1])))
         self.learning_rate = learning_rate
 
     def process_input(self, input_list):
@@ -31,7 +31,7 @@ class NeuralNet:
         """
         output = input_list
         for i in range(len(self.weight_matrices)):
-            output = NeuralNet.sigmoid(self.weight_matrices[i] * output + self.bias_matrices[i].transpose())
+            output = NeuralNet.sigmoid(np.matmul(self.weight_matrices[i], output) + self.bias_matrices[i].transpose())
         return output
 
     def stochastic_training_input(self, input_outputs, num_epochs, mini_batch_size):
@@ -51,12 +51,12 @@ class NeuralNet:
     @staticmethod
     def quad_cost_func(actual, expected):
         """
-
+        Computation of the quadratic cost function for one input/output of the neural net.
         :param actual: matrix of actual output values
         :param expected: matrix of expected output values
-        :return:
+        :return: a scalar value for the difference between the actual and expected values.
         """
-        pass
+        # TODO replace with test case
 
     @staticmethod
     def sigmoid(x):
