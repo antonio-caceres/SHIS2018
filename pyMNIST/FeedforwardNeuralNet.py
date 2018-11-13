@@ -17,10 +17,10 @@ class NeuralNet:
         for i in range(len(neuron_layers) - 1):
             weight_matrix = []
             for r in range(neuron_layers[i + 1]):
-                weight_matrix.append(np.random.ranf(neuron_layers[i])) # TODO: add negative chance
+                weight_matrix.append(np.random.uniform(-1, 1, neuron_layers[i]))
             weight_matrix = np.matrix(weight_matrix)
             self.weight_matrices.append(weight_matrix)
-            self.bias_matrices.append(np.matrix(np.random.ranf(neuron_layers[i+1])))  # TODO: add negative chance
+            self.bias_matrices.append(np.matrix(np.random.uniform(-1, 1, neuron_layers[i+1])))
         self.learning_rate = learning_rate
 
     def process_input(self, input_list):
@@ -42,7 +42,21 @@ class NeuralNet:
         :param mini_batch_size: the size of batches to use.
         :return: None
         """
-        pass  # to finish one training path
+
+        # calculate cost using process_input
+        # average cost over mini_batch_size number of inputs
+        # Use gradient descent w/ der_sigmoid to find the instantaneous slope w/ respect to outputs
+        # backprop
+
+    @staticmethod
+    def quad_cost_func(actual, expected):
+        """
+
+        :param actual: matrix of actual output values
+        :param expected: matrix of expected output values
+        :return:
+        """
+        pass
 
     @staticmethod
     def sigmoid(x):
