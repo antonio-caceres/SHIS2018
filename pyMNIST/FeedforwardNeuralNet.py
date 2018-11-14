@@ -26,8 +26,8 @@ class NeuralNet:
     def process_input(self, input_list):
         """
         Process one input using the current weights of the neural network.
-        :param input_list: numpy column matrix of inputs to be fed to the input layer
-        :return: matrix of the output layer with given input
+        :param input_list: numpy column np array of inputs to be fed to the input layer
+        :return: np array of the output layer with given input
         """
         output = input_list
         for i in range(len(self.weight_matrices)):
@@ -37,12 +37,21 @@ class NeuralNet:
     def stochastic_training_input(self, input_outputs, num_epochs, mini_batch_size):
         """
         Run several iterations of the training process, backpropagating at the end
-        :param input_outputs: a list of tuples of inputs and their expected outputs
+        :param input_outputs: a list of tuples of input arrays and their expected output arrays
         :param num_epochs: the number of times to train batches
         :param mini_batch_size: the size of batches to use.
         :return: None
         """
-
+        if mini_batch_size > len(input_outputs):
+            mini_batch_size = len(input_outputs)
+        for n in range(num_epochs):
+            np.random.shuffle(input_outputs)
+            io_batch = [input_outputs[i] for i in range(mini_batch_size)]
+            cost = 0
+            for i, o in io_batch:
+                actual = self.process_input(i)
+                cost += self.quad_cost_func(actual, o)
+            cost /= len(io_batch)  # mean of all of the costs for the outputs
         # calculate cost using process_input
         # average cost over mini_batch_size number of inputs
         # Use gradient descent w/ der_sigmoid to find the instantaneous slope w/ respect to outputs
@@ -52,11 +61,13 @@ class NeuralNet:
     def quad_cost_func(actual, expected):
         """
         Computation of the quadratic cost function for one input/output of the neural net.
-        :param actual: matrix of actual output values
-        :param expected: matrix of expected output values
+        :param actual: np array of actual output values
+        :param expected: np array of expected output values
         :return: a scalar value for the difference between the actual and expected values.
         """
-        # TODO replace with test case
+        delta_matrix = np.abs(expected - actual)
+        vec_length = np.dot(delta_matrix, delta_matrix)
+        return 0.5 * vec_length  # I don't know why it's divided by 2; I'm copying the cost function from the book.
 
     @staticmethod
     def sigmoid(x):
