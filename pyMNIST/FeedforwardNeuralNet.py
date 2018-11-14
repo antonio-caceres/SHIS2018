@@ -6,7 +6,7 @@ class NeuralNet:
     bias_matrices = []
     learning_rate = 1
 
-    def __init__(self, neuron_layers, learning_rate = 1):
+    def __init__(self, neuron_layers, learning_rate = .1):
         """
         Generate a neural network with a specified number of layers and neurons.
         :param neuron_layers: list of integers representing the number of neurons in each layer.
@@ -14,6 +14,7 @@ class NeuralNet:
         """
         self.weight_matrices = []
         self.bias_matrices = []
+        learning_rate = np.abs(learning_rate)
         for i in range(len(neuron_layers) - 1):
             weight_matrix = []
             for r in range(neuron_layers[i + 1]):
@@ -47,15 +48,12 @@ class NeuralNet:
         for n in range(num_epochs):
             np.random.shuffle(input_outputs)
             io_batch = [input_outputs[i] for i in range(mini_batch_size)]
-            cost = 0
             for i, o in io_batch:
                 actual = self.process_input(i)
-                cost += self.quad_cost_func(actual, o)
-            cost /= len(io_batch)  # mean of all of the costs for the outputs
-        # calculate cost using process_input
-        # average cost over mini_batch_size number of inputs
-        # Use gradient descent w/ der_sigmoid to find the instantaneous slope w/ respect to outputs
-        # backprop
+                cost = self.quad_cost_func(actual, o)
+                der_cost_matrix = [actual - o]  # if they are close, the cost won't change very much.
+                # BACKPROP WOO HOO (for the number of matrices in weight_matrices?)
+            # for each of the outputs, compute the cost derivative (matrix?)
 
     @staticmethod
     def quad_cost_func(actual, expected):
@@ -74,7 +72,7 @@ class NeuralNet:
         return 1 / (1 + np.exp(-x))
 
     @staticmethod
-    def der_sigmoid(sig_x):
+    def der_sigmoid(sig_x):  # derivative of output with respect to sum of weights/inputs/biases
         """
         Compute the derivative of sigmoid(x) at x with the value of sigmoid(x).
         :param sig_x: takes the result of NeuralNet.sigmoid(x) to compute the derivative of sigmoid(x) at x.
