@@ -31,9 +31,12 @@ class NeuralNet:
         :return: np array of the output layer with given input
         """
         output = input_list
+        output_values = [input_list]
         for i in range(len(self.weight_matrices)):
             output = NeuralNet.sigmoid(np.matmul(self.weight_matrices[i], output) + self.bias_matrices[i].transpose())
-        return output
+            output_values.append(output)
+        print(output_values)
+        return output_values
 
     def stochastic_training_input(self, input_outputs, num_epochs, mini_batch_size):
         """
@@ -45,15 +48,17 @@ class NeuralNet:
         """
         if mini_batch_size > len(input_outputs):
             mini_batch_size = len(input_outputs)
-        for n in range(num_epochs):
+        for num in range(num_epochs):
             np.random.shuffle(input_outputs)
             io_batch = [input_outputs[i] for i in range(mini_batch_size)]
             for i, o in io_batch:
-                actual = self.process_input(i)
-                cost = self.quad_cost_func(actual, o)
-                der_cost_matrix = [actual - o]  # if they are close, the cost won't change very much.
-                # BACKPROP WOO HOO (for the number of matrices in weight_matrices?)
-            # for each of the outputs, compute the cost derivative (matrix?)
+                layer_outputs = self.process_input(i)  # actual is an array, same size as weight_matrices
+                layer_error = np.multiply((layer_outputs[-1] - o), self.der_sigmoid(layer_outputs[-1]))  # Hadamard
+                for n in range(len(self.weight_matrices)):
+                    a = np.dot(np.transpose(self.weight_matrices[-n-1]), layer_error)  # temporary value
+                    b = self.der_sigmoid(layer_outputs[-n-2])  # temporary value
+                    layer_error = np.multiply(a, b)
+            # for each input, sum the weight delta and bias delta, average and multiply by the learning rate
 
     @staticmethod
     def quad_cost_func(actual, expected):

@@ -14,6 +14,6 @@ outputs = [np.array([0.2, 0.7]),
            np.array([0.5, 0.2]),
            np.array([0.6, 0.4])]
 input_outputs = list(zip(inputs, outputs))
-print(input_outputs)
+# print(input_outputs)
 
-ann.stochastic_training_input(input_outputs, 4, 3)
+ann.stochastic_training_input(input_outputs, 1, 3)
