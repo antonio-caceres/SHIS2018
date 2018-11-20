@@ -4,7 +4,7 @@ import numpy as np
 class NeuralNet:
     weight_matrices = []
     bias_matrices = []
-    learning_rate = 1
+    learning_rate = 0
 
     def __init__(self, neuron_layers, learning_rate = .1):
         """
@@ -14,14 +14,16 @@ class NeuralNet:
         """
         self.weight_matrices = []
         self.bias_matrices = []
-        learning_rate = np.abs(learning_rate)
+        learning_rate = -np.abs(learning_rate)
         for i in range(len(neuron_layers) - 1):
             weight_matrix = []
             for r in range(neuron_layers[i + 1]):
                 weight_matrix.append(np.random.uniform(-1, 1, neuron_layers[i]))
-            weight_matrix = np.array(weight_matrix)
-            self.weight_matrices.append(weight_matrix)
-            self.bias_matrices.append(np.array(np.random.uniform(-1, 1, neuron_layers[i+1])))
+            self.weight_matrices.append(np.array(weight_matrix))
+            bias_matrix = []
+            for r in range(neuron_layers[i + 1]):
+                bias_matrix.append(np.random.uniform(-1, 1, 1))
+            self.bias_matrices.append(np.array(bias_matrix))
         self.learning_rate = learning_rate
 
     def process_input(self, input_list):
@@ -33,9 +35,8 @@ class NeuralNet:
         output = input_list
         output_values = [input_list]
         for i in range(len(self.weight_matrices)):
-            output = NeuralNet.sigmoid(np.matmul(self.weight_matrices[i], output) + self.bias_matrices[i].transpose())
+            output = NeuralNet.sigmoid(np.matmul(self.weight_matrices[i], output) + self.bias_matrices[i])
             output_values.append(output)
-        print(output_values)
         return output_values
 
     def stochastic_training_input(self, input_outputs, num_epochs, mini_batch_size):
@@ -51,14 +52,25 @@ class NeuralNet:
         for num in range(num_epochs):
             np.random.shuffle(input_outputs)
             io_batch = [input_outputs[i] for i in range(mini_batch_size)]
+            weight_deltas = []
+            for x in self.weight_matrices:
+                weight_deltas.append(np.zeros((x.shape)))
+            bias_deltas = []
+            for x in self.bias_matrices:
+                bias_deltas.append(np.zeros(x.shape))
             for i, o in io_batch:
-                layer_outputs = self.process_input(i)  # actual is an array, same size as weight_matrices
+                layer_outputs = self.process_input(i)  # an array of matrices, same size as weight_matrices
                 layer_error = np.multiply((layer_outputs[-1] - o), self.der_sigmoid(layer_outputs[-1]))  # Hadamard
-                for n in range(len(self.weight_matrices)):
+                weight_deltas[-1] += np.matmul(layer_error, np.transpose(layer_outputs[-2]))  # from column -> row
+                bias_deltas[-1] += layer_error
+                for n in range(len(self.weight_matrices)-1):
+                    # Each layer_output corresponds to a layer from the input to the output.
+                    # Each weight_matrix corresponds to a layer from (input + 1) to the output.
+                    # Each weight_ and bias_delta should corresponds to a layer from (input+1) to the output.
+                    # We've already taken care of the output layer above.
                     a = np.dot(np.transpose(self.weight_matrices[-n-1]), layer_error)  # temporary value
                     b = self.der_sigmoid(layer_outputs[-n-2])  # temporary value
                     layer_error = np.multiply(a, b)
-            # for each input, sum the weight delta and bias delta, average and multiply by the learning rate
 
     @staticmethod
     def quad_cost_func(actual, expected):
