@@ -63,7 +63,7 @@ class NeuralNet:
                 layer_error = np.multiply((layer_outputs[-1] - o), self.der_sigmoid(layer_outputs[-1]))  # Hadamard
                 weight_deltas[-1] += np.matmul(layer_error, np.transpose(layer_outputs[-2]))  # from column -> row
                 bias_deltas[-1] += layer_error
-                for n in range(len(self.weight_matrices)-1):
+                for n in range(len(self.weight_matrices)-1):  # BACKPROPAGATION
                     # Each layer_output corresponds to a layer from the input to the output.
                     # Each weight_matrix corresponds to a layer from (input + 1) to the output.
                     # Each weight_ and bias_delta should corresponds to a layer from (input+1) to the output.
@@ -71,6 +71,13 @@ class NeuralNet:
                     a = np.dot(np.transpose(self.weight_matrices[-n-1]), layer_error)  # temporary value
                     b = self.der_sigmoid(layer_outputs[-n-2])  # temporary value
                     layer_error = np.multiply(a, b)
+                    weight_deltas[-n - 2] += np.matmul(layer_error, np.transpose(layer_outputs[-n - 3]))
+                    bias_deltas[-n - 2] += layer_error
+            for i in range(len(self.weight_matrices)):
+                weight_deltas[i] *= self.learning_rate / mini_batch_size
+                self.weight_matrices[i] += weight_deltas[i]
+                bias_deltas[i] *= self.learning_rate / mini_batch_size
+                self.bias_matrices[i] += bias_deltas[i]
 
     @staticmethod
     def quad_cost_func(actual, expected):
