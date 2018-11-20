@@ -39,6 +39,29 @@ def process_output_data(data_list):
     return processed_outputs
 
 
+def test_neural_net(input_outputs, neural_net):
+    """
+    Validate a neural network with a zipped set of inputs and outputs
+    :param input_outputs: A zipped s
+    :param neural_net: the neural network with which to process the data
+    :return: the number of correct outputs that the network was able to achieve.
+    """
+    correct_counter = 0
+    for i, o in input_outputs:
+        actual = (neural_net.process_input(i))[-1]
+        index = -1
+        largest = -1
+        for n in range(len(actual)):
+            if actual[n][0] > largest:
+                index = n
+                largest = actual[n][0]
+        # TEST: print("i: ", index, "\nval: ", largest, "\nexpect: ", o)
+        if index == o:
+            # TEST: print("\nCORRECT\n")
+            correct_counter+=1
+    return correct_counter
+
+
 if __name__ == "__main__":
     size = [784, 15, 10]
     net = FeedforwardNeuralNet.NeuralNet(size, 0.15)
@@ -50,4 +73,23 @@ if __name__ == "__main__":
     train_inputs = process_input_data(x_train)
     train_outputs = process_output_data(y_train)
     test_inputs = process_input_data(x_test)
-    test_outputs = process_output_data(y_test)
+    # No need to process test_outputs because of how the test_neural_net function works.
+
+    train_inputs_outputs = list(zip(train_inputs, train_outputs))
+    test_inputs_outputs = list(zip(test_inputs, y_test))
+
+    # TRAINING
+    net.stochastic_training_input(train_inputs_outputs, 200, 100)
+    # TESTING
+    num_correct = test_neural_net(test_inputs_outputs, net)
+    print(num_correct)
+    # TRAINING
+    net.stochastic_training_input(train_inputs_outputs, 200, 100)
+    # TESTING
+    num_correct = test_neural_net(test_inputs_outputs, net)
+    print(num_correct)
+    # TRAINING
+    net.stochastic_training_input(train_inputs_outputs, 200, 100)
+    # TESTING
+    num_correct = test_neural_net(test_inputs_outputs, net)
+    print(num_correct)
