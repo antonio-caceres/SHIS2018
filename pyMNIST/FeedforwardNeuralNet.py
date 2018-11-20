@@ -54,7 +54,7 @@ class NeuralNet:
             io_batch = [input_outputs[i] for i in range(mini_batch_size)]
             weight_deltas = []
             for x in self.weight_matrices:
-                weight_deltas.append(np.zeros((x.shape)))
+                weight_deltas.append(np.zeros(x.shape))
             bias_deltas = []
             for x in self.bias_matrices:
                 bias_deltas.append(np.zeros(x.shape))
