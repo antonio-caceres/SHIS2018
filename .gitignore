@@ -1,9 +1,19 @@
-#General
+# General
 .DS_Store
 .AppleDouble
 .LSOverride
 
-#IntelliJ
+# IntelliJ
 .idea/
 out/
 *.iml
+
+# Python
+__pycache__
+
+# MNIST Dataset
+/pyMNIST/utils
+/pyMNIST/data
+
+# temporary
+/IntroHopfield/src/edu/caceres/introhopfield/HopfieldApp.java
