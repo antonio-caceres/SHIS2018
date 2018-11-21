@@ -67,12 +67,11 @@ def ann_training(net, train_data, test_data, num_trials, num_epochs, batch_size)
         net.stochastic_training_input(train_data, num_epochs, batch_size)
         num_correct = test_neural_net(net, test_data)
         print("Correct, ", i, ": ", num_correct)
-    print("\n\nWEIGHTS: ", net.weight_matrices, "\n\nBIASES: ", net.bias_matrices)
 
 
 if __name__ == "__main__":
     size = [784, 15, 10]
-    net = FeedforwardNeuralNet.NeuralNet(size, learning_rate=0.15)
+    net = FeedforwardNeuralNet.NeuralNet(size, learning_rate=0.30)
 
     # This is data from the fashion MNIST dataset. It contains 784 length arrays with integers between 0 and 255.
     x_train, y_train = mnist_reader.load_mnist('data/fashion', kind='train')
@@ -86,4 +85,4 @@ if __name__ == "__main__":
     train_inputs_outputs = list(zip(train_inputs, train_outputs))
     test_inputs_outputs = list(zip(test_inputs, y_test))
 
-    ann_training(net, train_inputs_outputs, test_inputs_outputs, num_trials=3, num_epochs=200, batch_size=100)
+    ann_training(net, train_inputs_outputs, test_inputs_outputs, num_trials=5, num_epochs=12000, batch_size=10)
