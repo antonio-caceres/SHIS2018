@@ -73,9 +73,11 @@ if __name__ == "__main__":
     size = [784, 15, 10]
     net = FeedforwardNeuralNet.NeuralNet(size, learning_rate=0.30)
 
-    # This is data from the fashion MNIST dataset. It contains 784 length arrays with integers between 0 and 255.
-    x_train, y_train = mnist_reader.load_mnist('data/fashion', kind='train')
-    x_test, y_test = mnist_reader.load_mnist('data/fashion', kind='t10k')
+    # This is data from the MNIST dataset. It contains 784 length arrays with integers between 0 and 255.
+    # x_train, y_train = mnist_reader.load_mnist('data/fashion', kind='train')
+    x_train, y_train = mnist_reader.load_mnist('data/mnist', kind='train')
+    # x_test, y_test = mnist_reader.load_mnist('data/fashion', kind='t10k')
+    x_test, y_test = mnist_reader.load_mnist('data/mnist', kind='t10k')
 
     train_inputs = process_input_data(x_train)
     train_outputs = process_output_data(y_train)
@@ -85,4 +87,4 @@ if __name__ == "__main__":
     train_inputs_outputs = list(zip(train_inputs, train_outputs))
     test_inputs_outputs = list(zip(test_inputs, y_test))
 
-    ann_training(net, train_inputs_outputs, test_inputs_outputs, num_trials=5, num_epochs=12000, batch_size=10)
+    ann_training(net, train_inputs_outputs, test_inputs_outputs, num_trials=3, num_epochs=12000, batch_size=10)
