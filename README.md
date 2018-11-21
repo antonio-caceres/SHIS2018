@@ -20,4 +20,5 @@ The major assignments will be:
 * Create an ANN that can ‘imagine’ and ‘write’ numbers or letters. (stretch goal)
 
 *pyMNIST Neural Network*
+
 My first major project is finished. To use this neural network, visit https://github.com/zalandoresearch/fashion-mnist. Download the repo, and move the data and utils folder into the project folder for my neural network. The code used to implement the data is already included in my application file. If you want to use the MNIST dataset, download the dataset from http://yann.lecun.com/exdb/mnist/ and move it into the mnist folder in the data folder.
