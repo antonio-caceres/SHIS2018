@@ -27,7 +27,6 @@ def write_weights(net, name, num_trials, num_epochs, batch_size, num_correct_lis
             file.write("\n\n")
 
 
-
 def get_complete_title(name):
     base_title = name + " Trial "
     counter = 0
@@ -38,7 +37,7 @@ def get_complete_title(name):
         for item in os.listdir(os.getcwd() + "/weight_database"):
             if item == title + ".txt":
                 unique = False
-        counter+=1
+        counter += 1
     complete_title = "weight_database/" + title + ".txt"
     return complete_title
 

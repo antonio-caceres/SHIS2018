@@ -56,10 +56,8 @@ def test_neural_net(neural_net, input_outputs):
             if actual[n][0] > largest:
                 index = n
                 largest = actual[n][0]
-        # TEST: print("i: ", index, "\nval: ", largest, "\nexpect: ", o)
         if index == o:
-            # TEST: print("\nCORRECT\n")
-            correct_counter+=1
+            correct_counter += 1
     return correct_counter
 
 
@@ -78,7 +76,7 @@ if __name__ == "__main__":
     net = FeedforwardNeuralNet.NeuralNet(size, learning_rate=0.30)
 
     # This is data from the MNIST dataset. It contains 784 length arrays with integers between 0 and 255.
-    data_set = "Digits" # "Fashion"
+    data_set = "Digits"  # "Fashion"
     if data_set == "Fashion":
         x_train, y_train = mnist_reader.load_mnist('data/fashion', kind='train')
         x_test, y_test = mnist_reader.load_mnist('data/fashion', kind='t10k')
