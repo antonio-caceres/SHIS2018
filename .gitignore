@@ -14,3 +14,6 @@ __pycache__
 # MNIST Dataset
 /pyMNIST/utils
 /pyMNIST/data
+
+# Weight Files
+/pyMNIST/weight_database
