@@ -1,4 +1,4 @@
-import NeuralNetMNISTapp as Processor
+import NeuralNetMNISTApp as Processor
 import FeedforwardNeuralNet as ANN
 import numpy as np
 

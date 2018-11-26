@@ -1,6 +1,7 @@
 from utils import mnist_reader
 import FeedforwardNeuralNet
 import numpy as np
+import WeightFileWriter
 
 
 def process_input_data(data_list):
@@ -62,11 +63,14 @@ def test_neural_net(neural_net, input_outputs):
     return correct_counter
 
 
-def ann_training(net, train_data, test_data, num_trials, num_epochs, batch_size):
+def ann_training(net, dataset_name, train_data, test_data, num_trials, num_epochs, batch_size):
+    num_correct_list = []
     for i in range(num_trials):
         net.stochastic_training_input(train_data, num_epochs, batch_size)
         num_correct = test_neural_net(net, test_data)
+        num_correct_list.append(num_correct)
         print("Correct, ", i, ": ", num_correct)
+    WeightFileWriter.write_weights(net, dataset_name, num_trials, num_epochs, batch_size, num_correct_list)
 
 
 if __name__ == "__main__":
@@ -74,17 +78,20 @@ if __name__ == "__main__":
     net = FeedforwardNeuralNet.NeuralNet(size, learning_rate=0.30)
 
     # This is data from the MNIST dataset. It contains 784 length arrays with integers between 0 and 255.
-    # x_train, y_train = mnist_reader.load_mnist('data/fashion', kind='train')
-    x_train, y_train = mnist_reader.load_mnist('data/mnist', kind='train')
-    # x_test, y_test = mnist_reader.load_mnist('data/fashion', kind='t10k')
-    x_test, y_test = mnist_reader.load_mnist('data/mnist', kind='t10k')
+    data_set = "Digits" # "Fashion"
+    if data_set == "Fashion":
+        x_train, y_train = mnist_reader.load_mnist('data/fashion', kind='train')
+        x_test, y_test = mnist_reader.load_mnist('data/fashion', kind='t10k')
+    else:
+        x_train, y_train = mnist_reader.load_mnist('data/mnist', kind='train')
+        x_test, y_test = mnist_reader.load_mnist('data/mnist', kind='t10k')
 
     train_inputs = process_input_data(x_train)
     train_outputs = process_output_data(y_train)
     test_inputs = process_input_data(x_test)
     # No need to process test_outputs because of how the test_neural_net function works.
 
-    train_inputs_outputs = list(zip(train_inputs, train_outputs))
-    test_inputs_outputs = list(zip(test_inputs, y_test))
+    train_io = list(zip(train_inputs, train_outputs))
+    test_io = list(zip(test_inputs, y_test))
 
-    ann_training(net, train_inputs_outputs, test_inputs_outputs, num_trials=3, num_epochs=24000, batch_size=5)
+    ann_training(net, data_set, train_io, test_io, num_trials=3, num_epochs=24000, batch_size=5)
