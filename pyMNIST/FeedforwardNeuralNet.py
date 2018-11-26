@@ -6,7 +6,7 @@ class NeuralNet:
     bias_matrices = []
     learning_rate = 0
 
-    def __init__(self, neuron_layers, learning_rate = .1):
+    def __init__(self, neuron_layers, learning_rate=.1):
         """
         Generate a neural network with a specified number of layers and neurons.
         :param neuron_layers: list of integers representing the number of neurons in each layer.
@@ -70,7 +70,7 @@ class NeuralNet:
                     # We've already taken care of the output layer above.
                     a = np.dot(np.transpose(self.weight_matrices[-n-1]), layer_error)  # temporary value
                     b = self.der_sigmoid(layer_outputs[-n-2])  # temporary value
-                    layer_error = np.multiply(a, b)
+                    layer_error = np.multiply(a, b)  # Hadamard matrix element-wise multiplication
                     weight_deltas[-n - 2] += np.matmul(layer_error, np.transpose(layer_outputs[-n - 3]))
                     bias_deltas[-n - 2] += layer_error
             for i in range(len(self.weight_matrices)):
@@ -78,6 +78,19 @@ class NeuralNet:
                 self.weight_matrices[i] += weight_deltas[i]
                 bias_deltas[i] *= self.learning_rate / mini_batch_size
                 self.bias_matrices[i] += bias_deltas[i]
+
+    def input_from_output(self, output_values):
+        """
+        Generate a matrix of inputs from a matrix of outputs.
+        :param output_values: matrix of outputs to "imagine" an input from.
+        :return: matrix of inputs from the outputs
+        """
+        reverse_output = output_values
+        for i in range(len(self.weight_matrices)):
+            a = np.linalg.pinv(self.weight_matrices[-i-1])
+            b = NeuralNet.anti_sigmoid(reverse_output) - self.bias_matrices[-i-1]
+            reverse_output = np.matmul(a, b)
+        return reverse_output
 
     @staticmethod
     def quad_cost_func(actual, expected):
@@ -103,3 +116,7 @@ class NeuralNet:
         :return: the derivative of the sigmoid function at the x-value of x given the value of sigmoid(x).
         """
         return sig_x * (1 - sig_x)
+
+    @staticmethod
+    def anti_sigmoid(x):
+        return -1 * np.log((1 / x) - 1)

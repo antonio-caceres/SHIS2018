@@ -87,4 +87,4 @@ if __name__ == "__main__":
     train_inputs_outputs = list(zip(train_inputs, train_outputs))
     test_inputs_outputs = list(zip(test_inputs, y_test))
 
-    ann_training(net, train_inputs_outputs, test_inputs_outputs, num_trials=3, num_epochs=12000, batch_size=10)
+    ann_training(net, train_inputs_outputs, test_inputs_outputs, num_trials=3, num_epochs=24000, batch_size=5)
