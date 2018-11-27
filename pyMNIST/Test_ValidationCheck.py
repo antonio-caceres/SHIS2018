@@ -1,4 +1,4 @@
-import NeuralNetMNISTapp as Processor
+import NetTrainerTester as Processor
 import FeedforwardNeuralNet as ANN
 import numpy as np
 

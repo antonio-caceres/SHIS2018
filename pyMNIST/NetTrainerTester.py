@@ -1,6 +1,7 @@
 from utils import mnist_reader
 import FeedforwardNeuralNet
 import numpy as np
+import WeightFileReaderWriter
 
 
 def process_input_data(data_list):
@@ -8,14 +9,13 @@ def process_input_data(data_list):
     Process a list of inputs, where one input is a list of integers corresponding to the pixels of the images, by
     dividing each input by 256 to limit the inputs to values between 0 and 1.
     :param data_list: a list of lists of integers, where each list is one input.
-    :return: a list of numpy arrays with length 784, with floats between 0 and 1.
+    :return: a list of numpy column arrays with length 784, with floats between 0 and 1.
     """
-    # Should I process them by confining them to 0 and 1 or confining them to -1 and 1? Trying 0 and 1 first.
     processed_inputs = []
     for old_input in data_list:
         new_input = []
         for integer in old_input:
-            new_input.append([integer/256])  # divide by 255 or 256?
+            new_input.append([integer/256])
         processed_inputs.append(np.array(new_input))
     return processed_inputs
 
@@ -55,18 +55,19 @@ def test_neural_net(neural_net, input_outputs):
             if actual[n][0] > largest:
                 index = n
                 largest = actual[n][0]
-        # TEST: print("i: ", index, "\nval: ", largest, "\nexpect: ", o)
         if index == o:
-            # TEST: print("\nCORRECT\n")
-            correct_counter+=1
+            correct_counter += 1
     return correct_counter
 
 
-def ann_training(net, train_data, test_data, num_trials, num_epochs, batch_size):
+def ann_training(net, dataset_name, train_data, test_data, num_trials, num_epochs, batch_size):
+    num_correct_list = []
     for i in range(num_trials):
         net.stochastic_training_input(train_data, num_epochs, batch_size)
         num_correct = test_neural_net(net, test_data)
+        num_correct_list.append(num_correct)
         print("Correct, ", i, ": ", num_correct)
+    WeightFileReaderWriter.write_weights(net, dataset_name, num_trials, num_epochs, batch_size, num_correct_list)
 
 
 if __name__ == "__main__":
@@ -74,17 +75,20 @@ if __name__ == "__main__":
     net = FeedforwardNeuralNet.NeuralNet(size, learning_rate=0.30)
 
     # This is data from the MNIST dataset. It contains 784 length arrays with integers between 0 and 255.
-    # x_train, y_train = mnist_reader.load_mnist('data/fashion', kind='train')
-    x_train, y_train = mnist_reader.load_mnist('data/mnist', kind='train')
-    # x_test, y_test = mnist_reader.load_mnist('data/fashion', kind='t10k')
-    x_test, y_test = mnist_reader.load_mnist('data/mnist', kind='t10k')
+    data_set = "Digits"  # "Fashion"
+    if data_set == "Fashion":
+        x_train, y_train = mnist_reader.load_mnist('data/fashion', kind='train')
+        x_test, y_test = mnist_reader.load_mnist('data/fashion', kind='t10k')
+    else:
+        x_train, y_train = mnist_reader.load_mnist('data/mnist', kind='train')
+        x_test, y_test = mnist_reader.load_mnist('data/mnist', kind='t10k')
 
     train_inputs = process_input_data(x_train)
     train_outputs = process_output_data(y_train)
     test_inputs = process_input_data(x_test)
     # No need to process test_outputs because of how the test_neural_net function works.
 
-    train_inputs_outputs = list(zip(train_inputs, train_outputs))
-    test_inputs_outputs = list(zip(test_inputs, y_test))
+    train_io = list(zip(train_inputs, train_outputs))
+    test_io = list(zip(test_inputs, y_test))
 
-    ann_training(net, train_inputs_outputs, test_inputs_outputs, num_trials=3, num_epochs=24000, batch_size=5)
+    ann_training(net, data_set, train_io, test_io, num_trials=3, num_epochs=24000, batch_size=5)
