@@ -1,5 +1,5 @@
 import os
-import WeightFileWriter as Writer
+import WeightFileReaderWriter as Writer
 import FeedforwardNeuralNet
 
 # Current Working Directory Test

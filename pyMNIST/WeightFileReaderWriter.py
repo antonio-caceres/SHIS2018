@@ -1,4 +1,5 @@
 import os
+import numpy as np
 
 
 def write_weights(net, name, num_trials, num_epochs, batch_size, num_correct_list):
@@ -42,3 +43,30 @@ def get_complete_title(name):
     return complete_title
 
 
+def read_weight_file(name, net):
+    file_name = "weight_database/" + name
+    new_weights = []
+    new_biases = []
+    with open(file_name, 'r') as file:
+        for i in range(12):
+            file.readline()
+        for i in range(len(net.weight_matrices)):
+            weight_matrix = []
+            for j in range(len(net.weight_matrices[i])):
+                line_data = file.readline().split()
+                weight_row = []
+                for string in line_data:
+                    weight_row.append(float(string))
+                weight_matrix.append(weight_row)
+            new_weights.append(np.array(weight_matrix))
+            file.readline()
+            file.readline()
+        for i in range(3):
+            file.readline()
+        for i in range(len(net.bias_matrices)):
+            bias_matrix = []
+            line_data = file.readline().split()
+            for string in line_data:
+                bias_matrix.append(float(string))
+            new_biases.append(np.array(bias_matrix))
+    return new_weights, new_biases

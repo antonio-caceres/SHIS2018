@@ -1,7 +1,7 @@
 from utils import mnist_reader
 import FeedforwardNeuralNet
 import numpy as np
-import WeightFileWriter
+import WeightFileReaderWriter
 
 
 def process_input_data(data_list):
@@ -9,14 +9,13 @@ def process_input_data(data_list):
     Process a list of inputs, where one input is a list of integers corresponding to the pixels of the images, by
     dividing each input by 256 to limit the inputs to values between 0 and 1.
     :param data_list: a list of lists of integers, where each list is one input.
-    :return: a list of numpy arrays with length 784, with floats between 0 and 1.
+    :return: a list of numpy column arrays with length 784, with floats between 0 and 1.
     """
-    # Should I process them by confining them to 0 and 1 or confining them to -1 and 1? Trying 0 and 1 first.
     processed_inputs = []
     for old_input in data_list:
         new_input = []
         for integer in old_input:
-            new_input.append([integer/256])  # divide by 255 or 256?
+            new_input.append([integer/256])
         processed_inputs.append(np.array(new_input))
     return processed_inputs
 
@@ -68,7 +67,7 @@ def ann_training(net, dataset_name, train_data, test_data, num_trials, num_epoch
         num_correct = test_neural_net(net, test_data)
         num_correct_list.append(num_correct)
         print("Correct, ", i, ": ", num_correct)
-    WeightFileWriter.write_weights(net, dataset_name, num_trials, num_epochs, batch_size, num_correct_list)
+    WeightFileReaderWriter.write_weights(net, dataset_name, num_trials, num_epochs, batch_size, num_correct_list)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-import NeuralNetMNISTApp as Processor
+import NetTrainerTester as Processor
 
 inputs = [[0, 0, 145, 164, 255, 56, 83],
           [1, 3, 98, 231, 0, 57, 32],
