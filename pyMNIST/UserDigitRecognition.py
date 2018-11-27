@@ -45,7 +45,7 @@ def get_outputs(net, input_list):
     return outputs
 
 
-def draw_output_in_ascii(output):
+def draw_input_in_ascii(output):
     i = 0
     for r in range(28):
         for c in range(28):
@@ -76,4 +76,4 @@ if __name__ == "__main__":
 
     for i in range(len(new_inputs)):
         print("\n\n", file_names[i], "\n")
-        draw_output_in_ascii(new_inputs[i])
+        draw_input_in_ascii(new_inputs[i])
