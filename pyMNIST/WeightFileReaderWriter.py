@@ -67,6 +67,8 @@ def read_weight_file(name, net):
             bias_matrix = []
             line_data = file.readline().split()
             for string in line_data:
-                bias_matrix.append(float(string))
+                bias_matrix.append([float(string)])
             new_biases.append(np.array(bias_matrix))
+            file.readline()
+            file.readline()
     return new_weights, new_biases
