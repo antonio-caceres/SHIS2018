@@ -1,5 +1,5 @@
 from utils import mnist_reader
-import FeedforwardNeuralNet
+import FeedforwardNeuralNet as NetClass
 import numpy as np
 import WeightFileReaderWriter
 
@@ -15,7 +15,7 @@ def process_input_data(data_list):
     for old_input in data_list:
         new_input = []
         for integer in old_input:
-            new_input.append([integer/256])
+            new_input.append([integer/256.0])
         processed_inputs.append(np.array(new_input))
     return processed_inputs
 
@@ -72,7 +72,7 @@ def ann_training(net, dataset_name, train_data, test_data, num_trials, num_epoch
 
 if __name__ == "__main__":
     size = [784, 15, 10]
-    net = FeedforwardNeuralNet.NeuralNet(size, learning_rate=0.30)
+    net = NetClass.NeuralNet(size, learning_rate=0.30)
 
     # This is data from the MNIST dataset. It contains 784 length arrays with integers between 0 and 255.
     data_set = "Digits"  # "Fashion"
