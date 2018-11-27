@@ -77,3 +77,4 @@ if __name__ == "__main__":
     for i in range(len(new_inputs)):
         print("\n\n", file_names[i], "\n")
         draw_input_in_ascii(new_inputs[i])
+        print("\n", new_outputs[i], "\n")
