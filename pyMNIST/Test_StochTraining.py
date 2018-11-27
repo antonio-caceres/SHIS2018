@@ -1,7 +1,7 @@
 import numpy as np
-import FeedforwardNeuralNet as Net
+import FeedforwardNeuralNet as NetClass
 
-ann = Net.NeuralNet([3, 4, 2], 0.15)
+net = NetClass.NeuralNet([3, 4, 2], 0.15)
 
 inputs = [np.array([[0.1], [0.2], [0.3]]),
           np.array([[0.4], [0.0], [0.7]]),
@@ -17,4 +17,4 @@ input_outputs = list(zip(inputs, outputs))
 # for i, o in input_outputs:
 #     print("input: ", i, "\noutput: ", o, "\n")
 
-ann.stochastic_training_input(input_outputs, 1, 3)
+net.stochastic_training_input(input_outputs, 1, 3)

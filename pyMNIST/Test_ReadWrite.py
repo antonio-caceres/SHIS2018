@@ -1,6 +1,6 @@
 import os
 import WeightFileReaderWriter as Writer
-import FeedforwardNeuralNet
+import FeedforwardNeuralNet as NetClass
 
 # Current Working Directory Test
 print(os.getcwd())
@@ -13,5 +13,5 @@ for i in range(3):
 
 # Weight Writer Test
 size = [4, 5, 3]
-net = FeedforwardNeuralNet.NeuralNet(size, learning_rate=.15)
+net = NetClass.NeuralNet(size, learning_rate=.15)
 Writer.write_weights(net, "Test", 5, 5, 5, [1, 8, 4, 20, 5])

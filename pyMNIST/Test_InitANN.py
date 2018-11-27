@@ -1,7 +1,7 @@
-import FeedforwardNeuralNet as Net
+import FeedforwardNeuralNet as NetClass
 
-ann = Net.NeuralNet([4, 5, 3])
-for i in range(len(ann.weight_matrices)):
-    print(ann.weight_matrices[i], "\n\n")
-    print(ann.bias_matrices[i], "\n\n")
-    print(ann.weight_matrices[i][0], "\n\n", ann.weight_matrices[i][0][0])
+net = NetClass.NeuralNet([4, 5, 3])
+for i in range(len(net.weight_matrices)):
+    print(net.weight_matrices[i], "\n\n")
+    print(net.bias_matrices[i], "\n\n")
+    print(net.weight_matrices[i][0], "\n\n", net.weight_matrices[i][0][0])

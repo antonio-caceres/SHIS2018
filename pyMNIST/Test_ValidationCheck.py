@@ -1,8 +1,8 @@
 import NetTrainerTester as Processor
-import FeedforwardNeuralNet as ANN
+import FeedforwardNeuralNet as NetClass
 import numpy as np
 
-net = ANN.NeuralNet([4, 2])
+net = NetClass.NeuralNet([4, 2])
 weight_matrix = [[-1, 1, 1, -1],
                  [-1, 0, -1, 1]]
 net.weight_matrices = [np.array(weight_matrix)]

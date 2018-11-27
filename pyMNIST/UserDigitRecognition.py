@@ -1,10 +1,10 @@
 import os, imageio
 import numpy as np
-import FeedforwardNeuralNet
+import FeedforwardNeuralNet as NetClass
 import WeightFileReaderWriter as Writer
 
 size = [784, 15, 10]
-net = FeedforwardNeuralNet.NeuralNet(size, learning_rate=0.30)
+net = NetClass.NeuralNet(size, learning_rate=0.30)
 
 new_weights, new_biases = Writer.read_weight_file("Weights.txt", net)
 net.weight_matrices = new_weights
