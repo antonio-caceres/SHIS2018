@@ -10,7 +10,3 @@ out/
 
 # Python
 __pycache__
-
-# MNIST Dataset
-/pyMNIST/utils/
-/pyMNIST/data/

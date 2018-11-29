@@ -72,9 +72,11 @@ if __name__ == "__main__":
     new_inputs = process_bitmap_input_data(orig_inputs)
     new_outputs = get_outputs(net, new_inputs)
 
-    # test_inputs = Processor.process_input_data(x_test)  # for the mnist dataset
+    test_inputs = Processor.process_input_data(x_test)  # for the mnist dataset
 
     for i in range(len(new_inputs)):
         print("\n\n", file_names[i], "\n")
         draw_input_in_ascii(new_inputs[i])
         print("\n", new_outputs[i], "\n")
+        draw_input_in_ascii(test_inputs[i])
+        print("\n", net.process_input(test_inputs[i])[-1], "\n")
