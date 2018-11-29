@@ -20,7 +20,6 @@
 
 **Final Presentation**
 * Begin to put together the final presentation.
-* Create a list of any extra content that I need to give an effective presentation.
 * Begin practicing the presentation.
 
 **Bambino Game Reinforcement**
@@ -32,5 +31,21 @@
 * Reach out to Dr. Thorsten Joachims about his project comparing bandit feedback from the proposal of the project.
 
 ### Research
-11/12 to 11/16
-* TODO: Find sources that I want to look into for my learning path and for the final presentation.
+Neural Networks
+* Introduction to Neural Networks with Java – The Future of Neural Networks
+* [Deep Learning with Logged Bandit Feedback](http://www.cs.cornell.edu/people/tj/publications/joachims_etal_18a.pdf)
+* [Understanding the Difficulty of Training Deep Feedforward Neural Networks](http://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf?hc_location=ufi)
+* Neural Networks and Deep Learning – Improving the Way Neural Networks Learn
+* Intelligence Emerging – Evolutionary Algorithms
+* Intelligence Emerging – Artificial Neural Networks
+* Intelligence Emerging – Knowledge Representation in Neural Networks
+* Intelligence Emerging – Evolving Artificial Neural Networks
+
+Reinforcement Learning
+* Reinforcement Learning: An Introduction – Introduction
+* Reinforcement Learning: An Introduction – Multi-armed Bandits
+  * Supporting Resource: [Bandit Problems](https://oneraynyday.github.io/ml/2018/05/03/Reinforcement-Learning-Bandit/)
+* Reinforcement Learning: An Introduction – Finite Markov Decision Processes
+  * Supporting Resource: [Markov Decision Processes](https://oneraynyday.github.io/ml/2018/05/06/Reinforcement-Learning-MDPs/)
+* Reinforcement Learning: An Introduction – Monte Carlo Methods
+  * Supporting Resource: [Monte Carlo](https://oneraynyday.github.io/ml/2018/05/24/Reinforcement-Learning-Monte-Carlo/)
