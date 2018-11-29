@@ -143,10 +143,10 @@ def shift_list(list, delta, fill_extra_with=None):
             for i in range(len(list)+delta, len(list)):
                 list[i] = copy.copy(fill_extra_with)
     if delta > 0:
-        for i in range(len(list)-1, delta, -1):
+        for i in range(len(list)-1, -1, -1):
             list[i] = list[i-delta]
         if fill_extra_with != None:
-            for i in range(delta, -1, -1):
+            for i in range(delta-1, -1, -1):
                 list[i] = copy.copy(fill_extra_with)
 
 def shift_all_values(values, deltaxy):
@@ -158,8 +158,8 @@ def shift_all_values(values, deltaxy):
 def calculate_shift_ranges(values):
     """return ((max_left, max_right),(max_up, max_down))"""
     bounds = bound_box_of_values(values)
-    rangex = (-bounds[0][0]+1, WIDTH-bounds[1][0]-1)
-    rangey = (-bounds[0][1]+1, HEIGHT-bounds[1][1]-1)
+    rangex = (-bounds[0][0], WIDTH-bounds[1][0]-1)
+    rangey = (-bounds[0][1], HEIGHT-bounds[1][1]-1)
     return (rangex, rangey)
 
 
