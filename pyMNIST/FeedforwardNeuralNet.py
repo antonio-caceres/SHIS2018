@@ -39,7 +39,7 @@ class NeuralNet:
             output_values.append(output)
         return output_values
 
-    def stochastic_training_input(self, input_outputs, num_epochs, mini_batch_size):
+    def stochastic_training_input(self, input_outputs, num_epochs, mini_batch_size, epoch_callback = None):
         """
         Run several iterations of the training process, backpropagating at the end
         :param input_outputs: a list of tuples of input arrays and their expected output arrays
@@ -78,6 +78,8 @@ class NeuralNet:
                 self.weight_matrices[i] += weight_deltas[i]
                 bias_deltas[i] *= self.learning_rate / mini_batch_size
                 self.bias_matrices[i] += bias_deltas[i]
+            if epoch_callback != None:
+                epoch_callback(num+1)
 
     def input_from_output(self, output_values):
         """

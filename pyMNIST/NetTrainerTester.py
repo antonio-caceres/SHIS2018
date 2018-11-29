@@ -4,6 +4,11 @@ import numpy as np
 import WeightFileReaderWriter
 
 
+PROGRESS_BAR_DISPLAY_SIZE = 30 # set this to None to turn off progress bar output
+if PROGRESS_BAR_DISPLAY_SIZE != None:
+    import progressbar, time, sys
+
+
 def process_input_data(data_list):
     """
     Process a list of inputs, where one input is a list of integers corresponding to the pixels of the images, by
@@ -11,12 +16,23 @@ def process_input_data(data_list):
     :param data_list: a list of lists of integers, where each list is one input.
     :return: a list of numpy column arrays with length 784, with floats between 0 and 1.
     """
+    t_start = 0
+    if PROGRESS_BAR_DISPLAY_SIZE != None:
+        t_start = time.time()
+        print("processing input...")
+        progressbar.draw_bar(0, PROGRESS_BAR_DISPLAY_SIZE, 0)
+        progress = 0
     processed_inputs = []
     for old_input in data_list:
         new_input = []
         for integer in old_input:
             new_input.append([integer/256.0])
         processed_inputs.append(np.array(new_input))
+        if PROGRESS_BAR_DISPLAY_SIZE != None:
+            progress += 1.0
+            progressbar.draw_bar(progress/len(data_list), PROGRESS_BAR_DISPLAY_SIZE, time.time()-t_start)
+    if PROGRESS_BAR_DISPLAY_SIZE != None:
+        sys.stdout.write("processing input took " + progressbar.timing(time.time()-t_start, 8)+"\n")
     return processed_inputs
 
 
@@ -27,6 +43,12 @@ def process_output_data(data_list):
     :param data_list: a list of integers, where each integer is one output.
     :return: a list of numpy arrays with length 10, with 0 at all indices except the integer from data_list
     """
+    t_start = 0
+    if PROGRESS_BAR_DISPLAY_SIZE != None:
+        t_start = time.time()
+        print("processing output...")
+        progressbar.draw_bar(0, PROGRESS_BAR_DISPLAY_SIZE, 0)
+        progress = 0
     processed_outputs = []
     for old_output in data_list:
         new_output = []
@@ -36,6 +58,11 @@ def process_output_data(data_list):
             else:
                 new_output.append([0])
         processed_outputs.append(np.array(new_output))
+        if PROGRESS_BAR_DISPLAY_SIZE != None:
+            progress += 1.0
+            progressbar.draw_bar(progress/len(data_list), PROGRESS_BAR_DISPLAY_SIZE, time.time()-t_start)
+    if PROGRESS_BAR_DISPLAY_SIZE != None:
+        sys.stdout.write("processing output took "+progressbar.timing(time.time()-t_start, 8)+"\n")
     return processed_outputs
 
 
@@ -62,11 +89,27 @@ def test_neural_net(neural_net, input_outputs):
 
 def ann_training(net, dataset_name, train_data, test_data, num_trials, num_epochs, batch_size):
     num_correct_list = []
+    t_start = 0
+    if PROGRESS_BAR_DISPLAY_SIZE != None:
+        t_start = time.time()
+        print("ann training...")
+        progressbar.draw_bar(0, PROGRESS_BAR_DISPLAY_SIZE, 0)
     for i in range(num_trials):
-        net.stochastic_training_input(train_data, num_epochs, batch_size)
+        if PROGRESS_BAR_DISPLAY_SIZE != None:
+            def update_progress_bar_on_epoch(epoch_index):
+                progressbar.draw_bar((float(i)/num_trials)+(float(epoch_index)/(num_epochs*num_trials)), PROGRESS_BAR_DISPLAY_SIZE, time.time()-t_start)
+            net.stochastic_training_input(train_data, num_epochs, batch_size, update_progress_bar_on_epoch)
+        else:
+            net.stochastic_training_input(train_data, num_epochs, batch_size)
         num_correct = test_neural_net(net, test_data)
         num_correct_list.append(num_correct)
-        print("Correct, ", i, ": ", num_correct)
+        if PROGRESS_BAR_DISPLAY_SIZE != None:
+            progressbar.draw_bar_text(float(i+1)/num_trials, PROGRESS_BAR_DISPLAY_SIZE, time.time()-t_start)
+            sys.stdout.write("Correct "+str(num_correct_list)+"\r")
+        else:
+            print("Correct: ", i, ": ", num_correct)
+    if PROGRESS_BAR_DISPLAY_SIZE != None:
+        sys.stdout.write("ann training took "+progressbar.timing(time.time()-t_start, 12)+"\n")
     WeightFileReaderWriter.write_weights(net, dataset_name, num_trials, num_epochs, batch_size, num_correct_list)
 
 
@@ -92,3 +135,4 @@ if __name__ == "__main__":
     test_io = list(zip(test_inputs, y_test))
 
     ann_training(net, data_set, train_io, test_io, num_trials=3, num_epochs=24000, batch_size=5)
+    if PROGRESS_BAR_DISPLAY_SIZE != None: print("")
