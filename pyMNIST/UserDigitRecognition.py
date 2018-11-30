@@ -4,8 +4,6 @@ import imageio
 import numpy as np
 from utils import mnist_reader
 import FeedforwardNeuralNet as NetClass
-import NetTrainerTester as Processor
-import WeightFileReaderWriter as Writer
 
 x_test, y_test = mnist_reader.load_mnist('data/mnist', kind='t10k')
 

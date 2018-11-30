@@ -1,15 +1,14 @@
 import numpy as np
+import FileProcessor as Processor
+# import ProgressBar
+# TODO: Implement progress bar code into the neural network trainer.
 
 
 class NeuralNet:
-    weight_matrices = []
-    bias_matrices = []
-    learning_rate = 0
-
     def __init__(self, neuron_layers, learning_rate=.1):
         """
         Generate a neural network with a specified number of layers and neurons.
-        :param neuron_layers: list of integers representing the number of neurons in each layer.
+        :param neuron_layers: list of integers representing the number of neurons in each layer
         :param learning_rate: learning rate of the neural network
         """
         self.weight_matrices = []
@@ -39,12 +38,13 @@ class NeuralNet:
             output_values.append(output)
         return output_values
 
-    def stochastic_training_input(self, input_outputs, num_epochs, mini_batch_size, epoch_callback = None):
+    def stochastic_training_input(self, input_outputs, num_epochs, mini_batch_size, epoch_callback=None):
         """
         Run several iterations of the training process, backpropagating at the end
         :param input_outputs: a list of tuples of input arrays and their expected output arrays
         :param num_epochs: the number of times to train batches
-        :param mini_batch_size: the size of batches to use.
+        :param mini_batch_size: the size of batches to use
+        :param epoch_callback: a callback function to take the epoch number that just finished
         :return: None
         """
         if mini_batch_size > len(input_outputs):
@@ -78,7 +78,7 @@ class NeuralNet:
                 self.weight_matrices[i] += weight_deltas[i]
                 bias_deltas[i] *= self.learning_rate / mini_batch_size
                 self.bias_matrices[i] += bias_deltas[i]
-            if epoch_callback != None:
+            if epoch_callback is not None:
                 epoch_callback(num+1)
 
     def input_from_output(self, output_values):
@@ -122,3 +122,94 @@ class NeuralNet:
     @staticmethod
     def anti_sigmoid(x):
         return -1 * np.log((1 / x) - 1)
+
+
+class NetworkTrainer:
+    def __init__(self, net_size, learning_rate=.1, num_trials=1, num_epochs=60000, batch_size=1,
+                 dataset_name="MNIST Digits",):
+        """
+        Generate an object to train a neural network.
+        :param net_size: the size of the layers in the neural network to be initialized
+        :param learning_rate: the learning rate of the neural network to be initialized
+        :param num_trials: the number of trials over which to train one neural network
+        :param num_epochs: the number of epochs to run during one trial
+        :param batch_size: the number of inputs to process during one epoch
+        :param dataset_name: the name of the dataset with which to train and test the neural network
+            Currently, the supported options are "MNIST Digits" and "MNIST Fashion".
+        """
+        self.net_size = net_size
+        self.learning_rate = learning_rate
+        self.num_trials = num_trials
+        self.num_epochs = num_epochs
+        self.batch_size = batch_size
+        self.name = dataset_name
+        self.train_inputs_outputs, self.test_inputs_outputs = Processor.process_mnist_data(dataset_name)
+
+    def training(self, num_networks):
+        """
+        Train a certain number of randomly initialized networks, writing weight files for each network after
+        training and testing is completed.
+        :param num_networks: the number of new, randomly initialized networks to train with the dataset
+        :return: a list of file names and the index of the file name storing the information for the best network
+        """
+        for i in range(num_networks):
+            net = NeuralNet(self.net_size, self.learning_rate)
+            num_correct_list = []
+            for j in range(self.num_trials):
+                net.stochastic_training_input(self.train_inputs_outputs, self.num_epochs, self.batch_size)
+                num_correct_list.append(self.testing(net))
+                print(num_correct_list[j])
+            Processor.write_weight_file(net, self.name,
+                                        self.num_trials, self.num_epochs, self.batch_size,
+                                        num_correct_list)
+
+        # PROGRESS_BAR_DISPLAY_SIZE = 30  # set this to None to turn off progress bar output
+        # if PROGRESS_BAR_DISPLAY_SIZE is not None:
+        #     import ProgressBar, time, sys
+        # t_start = 0
+        # if PROGRESS_BAR_DISPLAY_SIZE != None:
+        #     t_start = time.time()
+        #     print("ann training...")
+        #     ProgressBar.draw_bar(0, PROGRESS_BAR_DISPLAY_SIZE, 0)
+        # for i in range(self.num_trials):
+        #     if PROGRESS_BAR_DISPLAY_SIZE != None:
+        #         def update_progress_bar_on_epoch(epoch_index):
+        #             ProgressBar.draw_bar((float(i) / num_trials) + (float(epoch_index) / (num_epochs * num_trials)),
+        #                                  PROGRESS_BAR_DISPLAY_SIZE, time.time() - t_start)
+        #
+        #         net.stochastic_training_input(train_data, num_epochs, batch_size, update_progress_bar_on_epoch)
+        #     else:
+        #     net.stochastic_training_input(train_data, num_epochs, batch_size)
+        #     num_correct = test_neural_net(net, test_data)
+        #     num_correct_list.append(num_correct)
+        #     if PROGRESS_BAR_DISPLAY_SIZE != None:
+        #         ProgressBar.draw_bar_text(float(i + 1) / num_trials, PROGRESS_BAR_DISPLAY_SIZE, time.time() - t_start)
+        #         sys.stdout.write("Correct " + str(num_correct_list) + "\r")
+        #     else:
+        #         print("Correct: ", i, ": ", num_correct)
+        # if PROGRESS_BAR_DISPLAY_SIZE != None:
+        #     sys.stdout.write("ann training took " + ProgressBar.timing(time.time() - t_start, 12) + "\n")
+        # WeightFileReaderWriter.write_weights(net, dataset_name, num_trials, num_epochs, batch_size, num_correct_list)
+    # if PROGRESS_BAR_DISPLAY_SIZE != None: print("")
+
+    def testing(self, net):
+        """
+        Test a neural network.
+        :param net: trained neural network
+        :return: number of testing inputs that the neural network classified correctly
+        """
+        def get_largest_output(output_list):
+            index, largest = -1  # placeholders for champions
+            for n in range(len(output_list)):
+                if output_list[n][0] > largest:
+                    index = n
+                    largest = output_list[n][0]
+            return index
+        correct_counter = 0
+        for i, o in self.test_inputs_outputs:
+            actual_list = net.process_input(i)[-1]
+            actual_index = get_largest_output(actual_list)
+            expected_index = get_largest_output(o)
+            if actual_index == expected_index:
+                correct_counter += 1
+        return correct_counter
