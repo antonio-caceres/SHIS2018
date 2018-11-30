@@ -31,6 +31,12 @@ def timing(seconds, width_limit = None):
 	return output
 
 def draw_bar_text(percent, width = 80, duration_so_far = None):
+	"""
+	:param percent: what percentage the progress bar should be filled
+	:param width: how wide to make all output, the progress bar, and estimated time left
+	:param duration_so_far: how much time has passed. if None, will not have an estimated time left
+	:return: None
+	"""
 	bar_width = width-8
 	if duration_so_far != None:
 		bar_width -= 8
