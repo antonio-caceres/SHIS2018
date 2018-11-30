@@ -4,14 +4,14 @@ import numpy as np
 
 def write_weights(net, name, num_trials, num_epochs, batch_size, num_correct_list):
     with open(get_complete_title(name), 'w') as file:
-        file.write("Dataset: " + name + "\n\n")
-        file.write("Number of Epochs: " + str(num_epochs) + "\n")
-        file.write("Batch Size: " + str(batch_size) + "\n")
-        file.write("Learning Rate: " + str(net.learning_rate) + "\n\n")
+        file.write("Dataset: " + name + "\n\n" +
+                   "Number of Epochs: " + str(num_epochs) + "\n" +
+                   "Batch Size: " + str(batch_size) + "\n" +
+                   "Learning Rate: " + str(net.learning_rate) + "\n\n")
         for i in range(num_trials):
             file.write("Trial " + str(i) + ": " + str(num_correct_list[i]) + " Correct\n")
-        file.write("\n")
-        file.write("Weight Matrices\n")
+
+        file.write("\nWeight Matrices\n")
         for i in range(len(net.weight_matrices)):
             file.write("-Weight Matrix " + str(i) + "\n")
             for row in net.weight_matrices[i]:
@@ -19,8 +19,8 @@ def write_weights(net, name, num_trials, num_epochs, batch_size, num_correct_lis
                     file.write(str(element) + " ")
                 file.write("\n")
             file.write("\n")
-        file.write("\n\n")
-        file.write("Bias Matrices\n")
+
+        file.write("\n\nBias Matrices\n")
         for i in range(len(net.bias_matrices)):
             file.write("-Bias Matrix " + str(i) + "\n")
             for col in net.bias_matrices[i]:
@@ -48,8 +48,7 @@ def read_weight_file(name, net):
     new_weights = []
     new_biases = []
     with open(file_name, 'r') as file:
-        for i in range(12):
-            file.readline()
+        file.readlines(12)
         for i in range(len(net.weight_matrices)):
             weight_matrix = []
             for j in range(len(net.weight_matrices[i])):
@@ -59,16 +58,13 @@ def read_weight_file(name, net):
                     weight_row.append(float(string))
                 weight_matrix.append(weight_row)
             new_weights.append(np.array(weight_matrix))
-            file.readline()
-            file.readline()
-        for i in range(3):
-            file.readline()
+            file.readlines(2)
+        file.readlines(3)
         for i in range(len(net.bias_matrices)):
             bias_matrix = []
             line_data = file.readline().split()
             for string in line_data:
                 bias_matrix.append([float(string)])
             new_biases.append(np.array(bias_matrix))
-            file.readline()
-            file.readline()
+            file.readlines(2)
     return new_weights, new_biases

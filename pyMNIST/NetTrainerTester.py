@@ -6,7 +6,7 @@ import WeightFileReaderWriter
 
 PROGRESS_BAR_DISPLAY_SIZE = 30 # set this to None to turn off progress bar output
 if PROGRESS_BAR_DISPLAY_SIZE != None:
-    import progressbar, time, sys
+    import ProgressBar, time, sys
 
 
 def process_input_data(data_list):
@@ -20,7 +20,7 @@ def process_input_data(data_list):
     if PROGRESS_BAR_DISPLAY_SIZE != None:
         t_start = time.time()
         print("processing input...")
-        progressbar.draw_bar(0, PROGRESS_BAR_DISPLAY_SIZE, 0)
+        ProgressBar.draw_bar(0, PROGRESS_BAR_DISPLAY_SIZE, 0)
         progress = 0
     processed_inputs = []
     for old_input in data_list:
@@ -30,9 +30,9 @@ def process_input_data(data_list):
         processed_inputs.append(np.array(new_input))
         if PROGRESS_BAR_DISPLAY_SIZE != None:
             progress += 1.0
-            progressbar.draw_bar(progress/len(data_list), PROGRESS_BAR_DISPLAY_SIZE, time.time()-t_start)
+            ProgressBar.draw_bar(progress / len(data_list), PROGRESS_BAR_DISPLAY_SIZE, time.time() - t_start)
     if PROGRESS_BAR_DISPLAY_SIZE != None:
-        sys.stdout.write("processing input took " + progressbar.timing(time.time()-t_start, 8)+"\n")
+        sys.stdout.write("processing input took " + ProgressBar.timing(time.time() - t_start, 8) + "\n")
     return processed_inputs
 
 
@@ -47,7 +47,7 @@ def process_output_data(data_list):
     if PROGRESS_BAR_DISPLAY_SIZE != None:
         t_start = time.time()
         print("processing output...")
-        progressbar.draw_bar(0, PROGRESS_BAR_DISPLAY_SIZE, 0)
+        ProgressBar.draw_bar(0, PROGRESS_BAR_DISPLAY_SIZE, 0)
         progress = 0
     processed_outputs = []
     for old_output in data_list:
@@ -60,9 +60,9 @@ def process_output_data(data_list):
         processed_outputs.append(np.array(new_output))
         if PROGRESS_BAR_DISPLAY_SIZE != None:
             progress += 1.0
-            progressbar.draw_bar(progress/len(data_list), PROGRESS_BAR_DISPLAY_SIZE, time.time()-t_start)
+            ProgressBar.draw_bar(progress / len(data_list), PROGRESS_BAR_DISPLAY_SIZE, time.time() - t_start)
     if PROGRESS_BAR_DISPLAY_SIZE != None:
-        sys.stdout.write("processing output took "+progressbar.timing(time.time()-t_start, 8)+"\n")
+        sys.stdout.write("processing output took " + ProgressBar.timing(time.time() - t_start, 8) + "\n")
     return processed_outputs
 
 
@@ -93,23 +93,23 @@ def ann_training(net, dataset_name, train_data, test_data, num_trials, num_epoch
     if PROGRESS_BAR_DISPLAY_SIZE != None:
         t_start = time.time()
         print("ann training...")
-        progressbar.draw_bar(0, PROGRESS_BAR_DISPLAY_SIZE, 0)
+        ProgressBar.draw_bar(0, PROGRESS_BAR_DISPLAY_SIZE, 0)
     for i in range(num_trials):
         if PROGRESS_BAR_DISPLAY_SIZE != None:
             def update_progress_bar_on_epoch(epoch_index):
-                progressbar.draw_bar((float(i)/num_trials)+(float(epoch_index)/(num_epochs*num_trials)), PROGRESS_BAR_DISPLAY_SIZE, time.time()-t_start)
+                ProgressBar.draw_bar((float(i) / num_trials) + (float(epoch_index) / (num_epochs * num_trials)), PROGRESS_BAR_DISPLAY_SIZE, time.time() - t_start)
             net.stochastic_training_input(train_data, num_epochs, batch_size, update_progress_bar_on_epoch)
         else:
             net.stochastic_training_input(train_data, num_epochs, batch_size)
         num_correct = test_neural_net(net, test_data)
         num_correct_list.append(num_correct)
         if PROGRESS_BAR_DISPLAY_SIZE != None:
-            progressbar.draw_bar_text(float(i+1)/num_trials, PROGRESS_BAR_DISPLAY_SIZE, time.time()-t_start)
+            ProgressBar.draw_bar_text(float(i + 1) / num_trials, PROGRESS_BAR_DISPLAY_SIZE, time.time() - t_start)
             sys.stdout.write("Correct "+str(num_correct_list)+"\r")
         else:
             print("Correct: ", i, ": ", num_correct)
     if PROGRESS_BAR_DISPLAY_SIZE != None:
-        sys.stdout.write("ann training took "+progressbar.timing(time.time()-t_start, 12)+"\n")
+        sys.stdout.write("ann training took " + ProgressBar.timing(time.time() - t_start, 12) + "\n")
     WeightFileReaderWriter.write_weights(net, dataset_name, num_trials, num_epochs, batch_size, num_correct_list)
 
 
