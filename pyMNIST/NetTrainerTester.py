@@ -16,6 +16,7 @@ def process_input_data(data_list):
     :param data_list: a list of lists of integers, where each list is one input.
     :return: a list of numpy column arrays with length 784, with floats between 0 and 1.
     """
+
     t_start = 0
     if PROGRESS_BAR_DISPLAY_SIZE != None:
         t_start = time.time()
@@ -43,6 +44,7 @@ def process_output_data(data_list):
     :param data_list: a list of integers, where each integer is one output.
     :return: a list of numpy arrays with length 10, with 0 at all indices except the integer from data_list
     """
+    
     t_start = 0
     if PROGRESS_BAR_DISPLAY_SIZE != None:
         t_start = time.time()
@@ -73,6 +75,7 @@ def test_neural_net(neural_net, input_outputs):
     :param neural_net: the neural network with which to process the data
     :return: the number of correct outputs that the network was able to achieve.
     """
+    
     correct_counter = 0
     for i, o in input_outputs:
         actual = (neural_net.process_input(i))[-1]
@@ -114,7 +117,7 @@ def ann_training(net, dataset_name, train_data, test_data, num_trials, num_epoch
 
 
 if __name__ == "__main__":
-    size = [784, 15, 10]
+    size = [28*28, 26*26, 26*26, 7*7, 10]
     net = NetClass.NeuralNet(size, learning_rate=0.30)
 
     # This is data from the MNIST dataset. It contains 784 length arrays with integers between 0 and 255.

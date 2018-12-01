@@ -1,10 +1,18 @@
 import sys
 
 
-def timing(seconds, width_limit=None):
-    """print [days,] [hours,] [minutes,] seconds [in the specified number of characters]"""
+def timing(seconds, width_limit = None):
+    """
+    print [days,] [hours,] [minutes,] seconds [in the specified number of characters].
+	Terms above in square-brackets may not be included if zero
+    :param seconds: time in seconds.
+    :type seconds: int, float
+    :param width_limit: if not None, limits size of the returned string (default None)
+    :type width_limit: int, None
+    :return: seconds converted into more human-readable form, eg: timing(3805) -> " 1h  3m 25s"
+    :rtype: str
+    """
     minutes, hours, days = 0, 0, 0
-
     def split_timing(seconds, seconds_per_unit):
         unit = 0
         if seconds > seconds_per_unit:
@@ -14,38 +22,39 @@ def timing(seconds, width_limit=None):
     seconds, days = split_timing(seconds, 60*60*24)
     seconds, hours = split_timing(seconds, 60*60)
     seconds, minutes = split_timing(seconds, 60)
-    # print(days, hours, minutes, seconds)
     output = ""
-    if days != 0 and (width_limit is None or len(output)+3 <= width_limit):
+	noWordLimit = width_limit is None
+    if days != 0 and (noWordLimit or len(output)+3 <= width_limit):
         output += "%2dd" % days
-    if hours != 0 and (width_limit is None or len(output)+3 <= width_limit):
+    if hours != 0 and (noWordLimit or len(output)+3 <= width_limit):
         if len(output) > 0:
             output += " "
-        if width_limit is None or len(output)+3 < width_limit:
+        if noWordLimit or len(output)+3 < width_limit:
             output += "%2dh" % hours
-    if minutes != 0 and (width_limit is None or len(output)+3 <= width_limit):
+    if minutes != 0 and (noWordLimit or len(output)+3 <= width_limit):
         if len(output) > 0:
             output += " "
-        if width_limit is None or len(output)+3 < width_limit:
+        if noWordLimit or len(output)+3 < width_limit:
             output += "%2dm" % minutes
-    if seconds != 0 and (width_limit is None or len(output)+3 <= width_limit):
+    if seconds != 0 and (noWordLimit or len(output)+3 <= width_limit):
         if len(output) > 0:
             output += " "
-        if width_limit is None or len(output)+3 < width_limit:
+        if noWordLimit or len(output)+3 < width_limit:
             output += "%2ds" % seconds
-    if width_limit is not None:
+    if not noWordLimit:
         format = "%%-%ds" % width_limit
         output = format % output
     return output
 
 
-def draw_bar_text(percent, width=80, duration_so_far=None):
+def draw_bar_text(percent, width=80, duration_so_far = None):
     """
     :param percent: what percentage the progress bar should be filled
     :param width: how wide to make all output, the progress bar, and estimated time left
     :param duration_so_far: how much time has passed. if None, will not have an estimated time left
     :return: None
     """
+
     bar_width = width-8
     if duration_so_far is not None:
         bar_width -= 8
@@ -70,7 +79,14 @@ def draw_bar_text(percent, width=80, duration_so_far=None):
     sys.stdout.flush()
 
 
-def draw_bar(percent, width, duration_so_far=None):
+def draw_bar(percent, width, duration_so_far = None):
+    """
+    as draw_bar_text, but also pulls the cursor back to the beginning of the line
+    :param percent: what percentage the progress bar should be filled
+    :param width: how wide to make all output, the progress bar, and estimated time left
+    :param duration_so_far: how much time has passed. if None, will not have an estimated time left
+    :return: None
+    """
     draw_bar_text(percent, width, duration_so_far)
     sys.stdout.write("\r")  # carriage return, restart output at the beginning of the line
 
