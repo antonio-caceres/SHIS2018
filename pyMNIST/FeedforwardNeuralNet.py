@@ -11,6 +11,7 @@ class NeuralNet:
         :param neuron_layers: list of integers representing the number of neurons in each layer
         :param learning_rate: learning rate of the neural network
         """
+        self.size = neuron_layers
         self.weight_matrices = []
         self.bias_matrices = []
         learning_rate = -np.abs(learning_rate)
@@ -60,17 +61,17 @@ class NeuralNet:
                 bias_deltas.append(np.zeros(x.shape))
             for i, o in io_batch:
                 layer_outputs = self.process_input(i)  # an array of matrices, same size as weight_matrices
-                layer_error = np.multiply((layer_outputs[-1] - o), self.der_sigmoid(layer_outputs[-1]))  # Hadamard
+                layer_error = np.multiply((layer_outputs[-1] - o), self.der_sigmoid(layer_outputs[-1]))
                 weight_deltas[-1] += np.matmul(layer_error, np.transpose(layer_outputs[-2]))  # from column -> row
                 bias_deltas[-1] += layer_error
-                for n in range(len(self.weight_matrices)-1):  # BACKPROPAGATION
+                for n in range(len(self.weight_matrices)-1):
                     # Each layer_output corresponds to a layer from the input to the output.
                     # Each weight_matrix corresponds to a layer from (input + 1) to the output.
                     # Each weight_ and bias_delta should corresponds to a layer from (input+1) to the output.
                     # We've already taken care of the output layer above.
                     a = np.dot(np.transpose(self.weight_matrices[-n-1]), layer_error)  # temporary value
                     b = self.der_sigmoid(layer_outputs[-n-2])  # temporary value
-                    layer_error = np.multiply(a, b)  # Hadamard matrix element-wise multiplication
+                    layer_error = np.multiply(a, b)
                     weight_deltas[-n - 2] += np.matmul(layer_error, np.transpose(layer_outputs[-n - 3]))
                     bias_deltas[-n - 2] += layer_error
             for i in range(len(self.weight_matrices)):
@@ -159,9 +160,9 @@ class NetworkTrainer:
                 net.stochastic_training_input(self.train_inputs_outputs, self.num_epochs, self.batch_size)
                 num_correct_list.append(self.testing(net))
                 print(num_correct_list[j])
-            Processor.write_weight_file(net, self.name,
-                                        self.num_trials, self.num_epochs, self.batch_size,
-                                        num_correct_list)
+            Processor.write_net_file(net, self.name,
+                                     self.num_trials, self.num_epochs, self.batch_size,
+                                     num_correct_list)
 
         # PROGRESS_BAR_DISPLAY_SIZE = 30  # set this to None to turn off progress bar output
         # if PROGRESS_BAR_DISPLAY_SIZE is not None:

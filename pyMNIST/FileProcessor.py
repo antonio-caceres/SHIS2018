@@ -1,20 +1,22 @@
 import os
+import sys
+import imageio
 import numpy as np
 from utils import mnist_reader
-# TODO: Documentation
+import FeedforwardNeuralNet
 
 
 def process_mnist_data(dataset_name):
     """
-    documentation to come
-    :param dataset_name: string
+    Process a dataset with the format used by MNIST, present in the 'data' folder.
+    :param dataset_name: name of the folder within the 'data' folder to get the files from
     :return: a tuple with two zipped lists, the training input/outputs and the testing input/outputs
     """
     def process_mnist_input(input_list):
         """
         Process a list of inputs, where one input is a list of integers corresponding to the pixels of the images, by
         dividing each input by 256 to limit the inputs to values between 0 and 1.
-        :param data_list: a list of lists of integers, where each list is one input.
+        :param input_list: a list of lists of integers, where each list is one input.
         :return: a list of numpy column arrays with length 784, with floats between 0 and 1.
         """
         processed_inputs = []
@@ -29,7 +31,7 @@ def process_mnist_data(dataset_name):
         """
         Process a list of outputs, where one output is an integer
         corresponding to the group that the input should be classified under.
-        :param data_list: a list of integers, where each integer is one output.
+        :param output_list: a list of integers, where each integer is one output.
         :return: a list of numpy arrays with length 10, with 0 at all indices except the integer from data_list
         """
         processed_outputs = []
@@ -93,12 +95,64 @@ def process_mnist_data(dataset_name):
     # return processed_outputs
 
 
-def write_weight_file(net, dataset_name, num_trials, num_epochs, batch_size, num_correct_list):
+def user_drawings_to_inputs(path, base_title):  # data/user
+    """
+    From a folder of user drawings, convert them into a format that can be processed by a neural network.
+    :param path: the folder to get the user drawings from
+    :param base_title: file name without the added number or the file extension (ignores files without this name)
+    :return: list of tuples with an input and its corresponding file name
+    """
+    input_list = []
+    file_names = []
+    for file_name in os.listdir(os.getcwd() + "/" + path):
+        if file_name[:len(base_title)] == base_title:
+            input_list.append(imageio.imread(path + "/" + file_name, as_gray=True))
+            file_names.append(file_name)
+    processed_input_list = []
+    for old_input in input_list:
+        new_input = []
+        for row in old_input:
+            for element in row:
+                new_input.append([(255 - element) / 256])
+        processed_input_list.append(np.array(new_input))
+    return zip(processed_input_list, file_names)
+
+
+def draw_input_to_ascii(input_list):
+    """
+    Prints an input to the network in ASCII characters.
+    :param input_list: a list of floats between 0 and 1, representing an input to the neural network.
+    """
+    i = 0
+    for r in range(28):
+        for c in range(28):
+            char = '.'
+            if input_list[0][i] != 0:
+                char = '#'
+            sys.stdout.write(char)
+            i += 1
+        sys.stdout.write("\n")
+    sys.stdout.write("\n")
+
+
+def write_net_file(net, dataset_name, num_trials, num_epochs, batch_size, num_correct_list):
+    """
+    Create a file containing all the information about a neural net after training.
+    :param net: the trained neural network
+    :param dataset_name: name of the dataset that the network was trained with
+    :param num_trials: the number of trials the network was trained with
+    :param num_epochs: the number of epochs the network was trained with
+    :param batch_size: the batch size the network was trained with
+    :param num_correct_list: the list of numbers of correct classifications after each training trial
+    """
     with open(get_complete_title(dataset_name + " Trial", "weight_database", ".txt"), 'w') as file:
-        file.write("Dataset: " + dataset_name + "\n\n" +
+        file.write("Dataset: " + dataset_name + "\n\n")
+        file.write("Network Size: ")
+        for num in net.size:
+            file.write(num + " ")
+        file.write("\nLearning Rate: " + str(net.learning_rate) + "\n"
                    "Number of Epochs: " + str(num_epochs) + "\n" +
-                   "Batch Size: " + str(batch_size) + "\n" +
-                   "Learning Rate: " + str(net.learning_rate) + "\n\n")
+                   "Batch Size: " + str(batch_size) + "\n\n")
         for i in range(num_trials):
             file.write("Trial " + str(i) + ": " + str(num_correct_list[i]) + " Correct\n")
 
@@ -119,11 +173,22 @@ def write_weight_file(net, dataset_name, num_trials, num_epochs, batch_size, num
             file.write("\n\n")
 
 
-def read_weight_file(name, net):
+def read_net_file(name):
+    """
+    Creates a NeuralNet object with preloaded weights and biases from a file.
+    :param name: the path and file name to be used to preload the weights and biases
+    :return: a neural net with weights and biases from the file.
+    """
     file_name = "weight_database/" + name
     new_weights = []
     new_biases = []
     with open(file_name, 'r') as file:
+        file.readlines(2)
+        str_list = file.readline().split()
+        size = []
+        for string in str_list[2:]:
+            size.append(int(string))
+        net = FeedforwardNeuralNet.NeuralNet(size)
         file.readlines(12)
         for i in range(len(net.weight_matrices)):
             weight_matrix = []
@@ -143,20 +208,18 @@ def read_weight_file(name, net):
                 bias_matrix.append([float(string)])
             new_biases.append(np.array(bias_matrix))
             file.readlines(2)
-    return new_weights, new_biases
-
-
-def get_files(path):
-    pass
+    net.weight_matrices = new_weights
+    net.bias_matrices = new_biases
+    return net
 
 
 def get_complete_title(base, path, file_type):
     """
     Given a folder and a file name, add numbers to ensure the new file will not overwrite any existing files.
-    :param base: The file name without the file extension.
-    :param path: The path to the folder to store the file in question, excluding the first and last '/'.
-    :param file_type: The file extension given to the file you are trying to name.
-    :return: A string with a path and file name that doesn't match any existing files in that path.
+    :param base: file name without the file extension
+    :param path: path to the folder to store the file in question, excluding the first and last '/'
+    :param file_type: file extension given to the file you are trying to name
+    :return: string with a path and file name that doesn't match any existing files in that path
     """
     title = base + " "
     counter = 0
