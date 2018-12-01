@@ -55,7 +55,7 @@ def timing(seconds = None, width_limit = None):
         output = format % output
     return output
 
-def draw_bar_text(percent, width = DEFAULT_WIDTH, duration_so_far = None):
+def draw_bar_text(percent, width = DEFAULT_WIDTH, duration_so_far = None, filled_and_unfilled = ('#', '-')):
     """
     :param percent: what percentage the progress bar should be filled. from 0 to 1 (inclusive)
     :type percent: float
@@ -74,13 +74,27 @@ def draw_bar_text(percent, width = DEFAULT_WIDTH, duration_so_far = None):
         __last_progress_percent = percent
         duration_so_far = time.time() - GLOBAL_PROGRESS_BAR_START
     bar_width = width - 16
-    limit = percent * bar_width
-    # characters for actual progress bar
-    for i in range(bar_width):
-        if i < limit:
-            sys.stdout.write("#")
+    filled_chars = int(percent * bar_width)
+    # draw characters for actual progress bar
+    def draw_bar_portion(texture, count, start_index):
+        num_chars = len(texture)
+        if num_chars == 1:
+            sys.stdout.write(texture*count)
         else:
-            sys.stdout.write("-")
+            start_index %= num_chars
+            chars_written = 0
+            while chars_written < count:
+                space_left = count - chars_written
+                if space_left > num_chars - start_index:
+                    sys.stdout.write(texture[start_index:])
+                    chars_written += num_chars - start_index
+                    start_index = 0
+                else:
+                    sys.stdout.write(texture[start_index:start_index+space_left])
+                    chars_written += space_left
+    offset = int(duration_so_far*4)
+    draw_bar_portion(filled_and_unfilled[0], filled_chars, offset)
+    draw_bar_portion(filled_and_unfilled[1], bar_width - filled_chars, filled_chars + offset)
     # 8 characters for percentage
     sys.stdout.write(" %5.1f%% " % (percent*100))  # total width 5, 1 decimal value
     if duration_so_far is not None:
@@ -95,7 +109,7 @@ def draw_bar_text(percent, width = DEFAULT_WIDTH, duration_so_far = None):
     sys.stdout.flush()
 
 
-def draw_bar(percent, width = DEFAULT_WIDTH, duration_so_far = None):
+def draw_bar(percent, width = DEFAULT_WIDTH, duration_so_far = None, filled_and_unfilled = ('#', '-')):
     """
     as draw_bar_text, but also pulls the cursor back to the beginning of the line
     :param percent: what percentage the progress bar should be filled. from 0 to 1 (inclusive)
@@ -107,7 +121,7 @@ def draw_bar(percent, width = DEFAULT_WIDTH, duration_so_far = None):
     :return: None
     """
 
-    draw_bar_text(percent, width, duration_so_far)
+    draw_bar_text(percent, width, duration_so_far, filled_and_unfilled)
     sys.stdout.write("\r")  # carriage return, restart output at the beginning of the line
 
 
@@ -134,7 +148,7 @@ if __name__ == "__main__":
     filledPercent = 0
     t_start = time.time()
     while filledPercent < 1:
-        draw_bar(filledPercent, 40, time.time() - t_start)
+        draw_bar(filledPercent, 40, time.time() - t_start, ("@@@0","-~"))
         time.sleep(random.random()*0.25)  # some time consuming operation goes here...
         filledPercent += 0.0125  # estimate addition to progress
     # sys.stdout.write("\n")
@@ -151,7 +165,6 @@ if __name__ == "__main__":
     # another example
     limit = 120
     for i in range(limit):
-        draw_bar(float(i)/limit)
+        draw_bar(float(i)/limit, filled_and_unfilled = ("__processing","."))
         time.sleep(random.random()*0.2)  # some time consuming operation goes here...
-    draw_bar(1)
     print_finished("process")
