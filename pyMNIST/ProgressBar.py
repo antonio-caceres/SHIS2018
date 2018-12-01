@@ -2,7 +2,7 @@ import sys
 
 
 GLOBAL_PROGRESS_BAR_START = 0
-__LAST_PROGRESS_PERCENT = 100
+__last_progress_percent = 1
 DEFAULT_WIDTH = 60
 
 
@@ -57,18 +57,21 @@ def timing(seconds = None, width_limit = None):
 
 def draw_bar_text(percent, width = DEFAULT_WIDTH, duration_so_far = None):
     """
-    :param percent: what percentage the progress bar should be filled
+    :param percent: what percentage the progress bar should be filled. from 0 to 1 (inclusive)
+    :type percent: float
     :param width: how wide to make all output, the progress bar, and estimated time left
+    :type width: int
     :param duration_so_far: how much time has passed. if None, assume there's only one bar that matters right now, and use that one's timing.
+    :type duration_so_far: int, None
     :return: None
     """
 
-    global GLOBAL_PROGRESS_BAR_START, __LAST_PROGRESS_PERCENT
+    global GLOBAL_PROGRESS_BAR_START, __last_progress_percent
     if duration_so_far == None:
         import time
-        if percent == 0 and __LAST_PROGRESS_PERCENT > percent:
+        if percent == 0 and __last_progress_percent > percent:
             GLOBAL_PROGRESS_BAR_START = time.time()
-        __LAST_PROGRESS_PERCENT = percent
+        __last_progress_percent = percent
         duration_so_far = time.time() - GLOBAL_PROGRESS_BAR_START
     bar_width = width - 16
     limit = percent * bar_width
@@ -95,19 +98,34 @@ def draw_bar_text(percent, width = DEFAULT_WIDTH, duration_so_far = None):
 def draw_bar(percent, width = DEFAULT_WIDTH, duration_so_far = None):
     """
     as draw_bar_text, but also pulls the cursor back to the beginning of the line
-    :param percent: what percentage the progress bar should be filled
+    :param percent: what percentage the progress bar should be filled. from 0 to 1 (inclusive)
+    :type percent: float
     :param width: how wide to make all output, the progress bar, and estimated time left
-    :param duration_so_far: how much time has passed. if None, will not have an estimated time left
+    :type width: int
+    :param duration_so_far: how much time has passed. if None, assume there's only one bar that matters right now, and use that one's timing.
+    :type duration_so_far: int, None
     :return: None
     """
+
     draw_bar_text(percent, width, duration_so_far)
     sys.stdout.write("\r")  # carriage return, restart output at the beginning of the line
 
 
-def print_finished(processName, width = None, seconds = None):
+def print_finished(process_name, width = None, seconds = None):
+    """
+    this function can be called once a progressbar is finished, to show how long it took
+    :param process_name: the name of the progress bar that just finished
+    :type process_name: str
+    :param width: how many characters were used for the progressbar. if None, use the DEFAULT_WIDTH
+    :type width: int, None
+    :param seconds: how many seconds have passed. if None, calculate automatically
+    :type width: int, None
+    :return: None
+    """
+
     if width == None:
         width = DEFAULT_WIDTH
-    print(("%-"+str(width)+"s  ") % (processName+" took "+timing(seconds)))
+    print(("%-"+str(width)+"s  ") % (process_name+" took "+timing(seconds)))
 
 
 if __name__ == "__main__":
