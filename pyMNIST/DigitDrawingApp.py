@@ -40,12 +40,25 @@ class DigitDrawing:
     def __init__(self):
         self.initialize_application()
 
+    def init_values(self):
+        self.width = 28
+        self.height = 28
+        import numpy as np
+        self.values = np.array([[0.0]]*self.width*self.height)
+
+    def get(self, x, y = None):
+        return self.values[y*self.width+x][0]
+
+    def set(self, x, y, value = None):
+        self.values[y*self.width+x][0] = value
+
     def initialize_application(self):
         """
         Initializes the pygame window, text, and drawing space.
         """
         # Create drawing space by initializing a zero array of values.
-        self.values = [[0 for i in range(DigitDrawing.WIDTH)] for j in range(DigitDrawing.HEIGHT)]
+        #self.values = [[0 for i in range(DigitDrawing.WIDTH)] for j in range(DigitDrawing.HEIGHT)]
+        self.init_values()
 
         pygame.init()
         self.window_surface = pygame.display.set_mode((500, 400), 0, 24)
@@ -103,27 +116,30 @@ class DigitDrawing:
             self.create_and_save_image("Image ")
         # Reset the drawing space on escape or backspace.
         elif event.key == 27 or event.key == 8:
-            self.values = [[0 for i in range(DigitDrawing.WIDTH)] for j in range(DigitDrawing.HEIGHT)]
+            self.init_values()
         elif event.key == 304:
             self.shift_is_pressed = True
         # Deals with the 'w', 'a', 's', 'd', and 'r' inputs.
         elif 32 <= event.key < 128 and chr(event.key) in "wasdr":
-            x_range, y_range = self.calculate_shift_ranges()
+            x_range, y_range = DigitDrawing.calculate_shift_ranges(self.values, self.width, self.height)
+            shift_delta = (0,0)
             if event.key == ord('w') and (self.shift_is_pressed or y_range[0] < 0):
-                self.shift_all_values((0, -1))
+                shift_delta = (0, -1)
             elif event.key == ord('a') and (self.shift_is_pressed or x_range[0] < 0):
-                self.shift_all_values((-1, 0))
+                shift_delta = (-1, 0)
             elif event.key == ord('s') and (self.shift_is_pressed or y_range[1] > 0):
-                self.shift_all_values((0, 1))
+                shift_delta = (0, +1)
             elif event.key == ord('d') and (self.shift_is_pressed or x_range[1] > 0):
-                self.shift_all_values((1, 0))
+                shift_delta = (+1, 0)
             elif event.key == ord('r'):
                 rnd_x = random.randint(x_range[0], x_range[1])
                 rnd_y = random.randint(y_range[0], y_range[1])
-                self.shift_all_values((rnd_x, rnd_y))
+                shift_delta = (rnd_x,rnd_y)
+            if shift_delta != (0,0):
+                self.shift_all_values(self.values, self.width, self.height, shift_delta)
 
     def draw_raster(self):
-        height, width = len(self.values), len(self.values[0])
+        height, width = self.height, self.width
         rect_border = 1
         pygame.draw.rect(self.window_surface, DigitDrawing.BLACK,
                          (DigitDrawing.X_OFFSET - rect_border,
@@ -135,7 +151,7 @@ class DigitDrawing:
             for c in range(width):
                 x = DigitDrawing.X_OFFSET + DigitDrawing.X_SIZE * c
                 y = DigitDrawing.Y_OFFSET + DigitDrawing.Y_SIZE * r
-                color = DigitDrawing.get_color_from_value(self.values[r][c])
+                color = DigitDrawing.get_color_from_value(self.get(c,r))
                 pygame.draw.rect(self.window_surface, color,
                                  (x, y, DigitDrawing.X_SIZE, DigitDrawing.Y_SIZE))
 
@@ -145,47 +161,16 @@ class DigitDrawing:
         :param base_name: the beginning of the file name for the image to be saved.
         """
         image_name = DigitDrawing.get_complete_title(base_name)
-        height, width = len(self.values), len(self.values[0])
+        height, width = self.height, self.width
         surf = pygame.Surface((width, height))
         surf.fill(DigitDrawing.WHITE)
         pix_array = pygame.PixelArray(surf)
         for r in range(height):
             for c in range(width):
                 # note: pygame pixel maps are x/y not row/col
-                pix_array[c][r] = DigitDrawing.get_color_from_value(self.values[r][c])
+                pix_array[c][r] = DigitDrawing.get_color_from_value(self.get(c,r))
         del pix_array
         pygame.image.save(surf, image_name)
-
-    def calculate_shift_ranges(self):
-        """
-        Calculates the maximum range by which to shift the image to reach the boundary
-        :return: ((max_left, max_right),(max_up, max_down))
-        """
-        bounds = self.bound_box_of_values()
-        x_range = (-bounds[0][0], DigitDrawing.WIDTH - bounds[1][0] - 1)
-        y_range = (-bounds[0][1], DigitDrawing.HEIGHT - bounds[1][1] - 1)
-        return x_range, y_range
-
-    def bound_box_of_values(self):
-        """
-        Calculates the box of values surrounding the image in question.
-        :return: ((min_x,min_y),(max_x,max_y))
-        """
-        height, width = len(self.values), len(self.values[0])
-        minimum, maximum = [width, height], [-1, -1]
-        for r in range(height):
-            for c in range(width):
-                if self.values[r][c] != 0:
-                    if c < minimum[0]: minimum[0] = c
-                    if r < minimum[1]: minimum[1] = r
-                    if c > maximum[0]: maximum[0] = c
-                    if r > maximum[1]: maximum[1] = r
-        return (minimum[0], minimum[1]), (maximum[0], maximum[1])
-
-    def shift_all_values(self, xy_delta):
-        for r in range(len(self.values)):
-            DigitDrawing.shift_list(self.values[r], xy_delta[0], 0)
-        DigitDrawing.shift_list(self.values, xy_delta[1], [0] * len(self.values[0]))
 
     def add_brush_to_values_at(self, xy_pos):
         for r in range(len(self.BRUSH)):
@@ -194,22 +179,72 @@ class DigitDrawing:
                     self.add_to_values_at((xy_pos[0] + c, xy_pos[1] + r))
 
     def add_to_values_at(self, pos):
+        ink = self.clicking
+        ink *= 1.0/self.MAX_VALUES
         if 0 <= pos[0] < DigitDrawing.WIDTH and 0 <= pos[1] < DigitDrawing.HEIGHT:
             r, c = int(pos[1]), int(pos[0])
             up, dn, lf, rt = pos[1] - r < .5, pos[1] - r > .5, pos[0] - c < .5, pos[0] - c > .5
-            self.values[r][c] += self.clicking * 5
+            self.set(c,r, self.get(c,r)+ink * 5)
             if r > 0 and up:
-                self.values[r - 1][c] += self.clicking * 2
-                if c > 0 and lf: self.values[r - 1][c - 1] += self.clicking * 1
-                if c > DigitDrawing.WIDTH - 1 and rt: self.values[r - 1][c + 1] += self.clicking * 1
+                self.set(c,r-1, self.get(c,r-1) + ink * 2)
+                if c > 0 and lf: self.set(c-1,r-1, self.get(c-1,r-1) + ink * 1)
+                if c > DigitDrawing.WIDTH - 1 and rt: self.set(c+1,r-1, self.get(c+1,r-1) + ink * 1)
             if c > 0 and lf:
-                self.values[r][c - 1] += self.clicking * 2
+                self.set(c-1,r,self.get(c-1,r) + ink * 2)
             if r < DigitDrawing.HEIGHT - 1 and dn:
-                self.values[r + 1][c] += self.clicking * 2
-                if c > 0 and lf: self.values[r + 1][c - 1] += self.clicking * 1
-                if c > DigitDrawing.WIDTH - 1 and rt: self.values[r + 1][c + 1] += self.clicking * 1
+                self.set(c,r+1, self.get(c,r+1) + ink * 2)
+                if c > 0 and lf: self.set(c-1,r+1, self.get(c-1,r+1) + ink * 1)
+                if c > DigitDrawing.WIDTH - 1 and rt: self.set(c+1,r+1, self.get(c+1,r+1) + ink * 1)
             if c > DigitDrawing.WIDTH - 1 and rt:
-                self.values[r][c + 1] += self.clicking * 2
+                self.set(c+1,r, self.get(c+1,r)+ ink * 2)
+
+    # TODO def range_of_shiftable_positions(values, width, height):
+    # returns a list of tuples, x/y deltas to pass into shift_all_values in a for loop. eg: an exhaustive shift if the image could be shifted 2left,1up or 2right,1down would look like [(-2,-1),(1,0),(1,0),(1,0),(-4,1),(1,0),(1,0),(1,0),(-4,1),(1,0),(1,0),(1,0)]
+
+    @staticmethod
+    def shift_all_values(values, width, height, xy_delta):
+        # create a 2D array version of the 1D array
+        twoDcopy = []
+        for r in range(height):
+            twoDcopy.append([])
+            for c in range(width):
+                twoDcopy[r].append(values[r*width+c][0])
+        for r in range(len(twoDcopy)):
+            DigitDrawing.shift_list(twoDcopy[r], xy_delta[0], 0)
+        DigitDrawing.shift_list(twoDcopy, xy_delta[1], [0] * len(twoDcopy[0]))
+        # copy it back now
+        for r in range(height):
+            for c in range(width):
+                values[r*width+c][0] = twoDcopy[r][c]
+
+
+    @staticmethod
+    def calculate_shift_ranges(values, width, height):
+        """
+        Calculates the maximum range by which to shift the image to reach the boundary
+        :return: ((max_left, max_right),(max_up, max_down))
+        """
+        bounds = DigitDrawing.bound_box_of_values(values, width, height)
+        x_range = (-bounds[0][0], width - bounds[1][0] - 1)
+        y_range = (-bounds[0][1], height - bounds[1][1] - 1)
+        return x_range, y_range
+
+    @staticmethod
+    def bound_box_of_values(values, width, height):
+        """
+        Calculates the box of values surrounding the image in question.
+        :return: ((min_x,min_y),(max_x,max_y))
+        """
+        minimum, maximum = [width, height], [-1, -1]
+        for r in range(height):
+            for c in range(width):
+                v = values[r*width+c][0]
+                if v != 0:
+                    if c < minimum[0]: minimum[0] = c
+                    if r < minimum[1]: minimum[1] = r
+                    if c > maximum[0]: maximum[0] = c
+                    if r > maximum[1]: maximum[1] = r
+        return (minimum[0], minimum[1]), (maximum[0], maximum[1])
 
     @staticmethod
     def shift_list(values, delta, fill_extra_with=None):
@@ -258,9 +293,9 @@ class DigitDrawing:
         """
         if v <= 0:
             return DigitDrawing.WHITE
-        if v > DigitDrawing.MAX_VALUES:
-            v = DigitDrawing.MAX_VALUES
-        v = int(255 * float(DigitDrawing.MAX_VALUES - v) / DigitDrawing.MAX_VALUES)
+        if v > 1: #DigitDrawing.MAX_VALUES:
+            v = 1 #DigitDrawing.MAX_VALUES
+        v = 255 - int(255 * v)
         return v, v, v
 
     @staticmethod
