@@ -127,7 +127,7 @@ class NeuralNet:
 
 class NetworkTrainer:
     def __init__(self, net_size, learning_rate=.1, num_trials=1, num_epochs=60000, batch_size=1,
-                 dataset_name="MNIST Digits",):
+                 dataset_name="MNIST Digits"):
         """
         Generate an object to train a neural network.
         :param net_size: the size of the layers in the neural network to be initialized
@@ -152,7 +152,11 @@ class NetworkTrainer:
         training and testing is completed.
         :param num_networks: the number of new, randomly initialized networks to train with the dataset
         :return: a list of file names and the index of the file name storing the information for the best network
+        :rtype: list, int
         """
+        file_list = []
+        largest = 0
+        index = -1
         for i in range(num_networks):
             net = NeuralNet(self.net_size, self.learning_rate)
             num_correct_list = []
@@ -160,9 +164,15 @@ class NetworkTrainer:
                 net.stochastic_training_input(self.train_inputs_outputs, self.num_epochs, self.batch_size)
                 num_correct_list.append(self.testing(net))
                 print(num_correct_list[j])
-            Processor.write_net_file(net, self.name,
-                                     self.num_trials, self.num_epochs, self.batch_size,
-                                     num_correct_list)
+            file_name = Processor.write_net_file(net, self.name,
+                                                 self.num_trials, self.num_epochs, self.batch_size,
+                                                 num_correct_list)
+            file_list.append(file_name)
+            if num_correct_list[-1] > largest:
+                index = i
+                largest = num_correct_list[-1]
+        return file_list, index
+
 
         # PROGRESS_BAR_DISPLAY_SIZE = 30  # set this to None to turn off progress bar output
         # if PROGRESS_BAR_DISPLAY_SIZE is not None:
@@ -214,3 +224,13 @@ class NetworkTrainer:
             if actual_index == expected_index:
                 correct_counter += 1
         return correct_counter
+
+
+if __name__ == "__main__":
+    size = [28*28, 26*26, 7*7, 10]
+    rate = .3
+    name = "MNIST Digits"
+    trainer = NetworkTrainer(size, learning_rate=rate, num_trials=3, num_epochs=24000, batch_size=5, dataset_name=name)
+    file_list, i = trainer.training(num_networks=5)
+    print(file_list[i])
+    net = Processor.read_net_file(file_list[i])

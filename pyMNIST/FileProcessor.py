@@ -144,8 +144,10 @@ def write_net_file(net, dataset_name, num_trials, num_epochs, batch_size, num_co
     :param num_epochs: the number of epochs the network was trained with
     :param batch_size: the batch size the network was trained with
     :param num_correct_list: the list of numbers of correct classifications after each training trial
+    :return: the file name that the net file was written under.
     """
-    with open(get_complete_title(dataset_name + " Trial", "weight_database", ".txt"), 'w') as file:
+    file_name = get_complete_title(dataset_name + " Trial", "weight_database", ".txt")
+    with open(file_name, 'w') as file:
         file.write("Dataset: " + dataset_name + "\n\n")
         file.write("Network Size: ")
         for num in net.size:
@@ -171,15 +173,15 @@ def write_net_file(net, dataset_name, num_trials, num_epochs, batch_size, num_co
             for col in net.bias_matrices[i]:
                 file.write(str(col[0]) + " ")
             file.write("\n\n")
+    return file_name
 
 
-def read_net_file(name):
+def read_net_file(file_name):
     """
     Creates a NeuralNet object with preloaded weights and biases from a file.
-    :param name: the path and file name to be used to preload the weights and biases
+    :param file_name: the path and file name to be used to preload the weights and biases
     :return: a neural net with weights and biases from the file.
     """
-    file_name = "weight_database/" + name
     new_weights = []
     new_biases = []
     with open(file_name, 'r') as file:
