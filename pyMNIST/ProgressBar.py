@@ -2,9 +2,14 @@ import sys
 
 
 GLOBAL_PROGRESS_BAR_START = 0
+DEFAULT_WIDTH = 40
 __last_progress_percent = 1
-DEFAULT_WIDTH = 60
-
+__has_colorama = False
+if not __has_colorama: # colorama abstracts colors in the terminal
+    import pkgutil
+    __has_colorama = pkgutil.find_loader('colorama')
+    if __has_colorama:
+        import colorama
 
 def timing(seconds = None, width_limit = None):
     """
@@ -74,7 +79,9 @@ def draw_bar_text(percent, width = DEFAULT_WIDTH, duration_so_far = None, filled
         __last_progress_percent = percent
         duration_so_far = time.time() - GLOBAL_PROGRESS_BAR_START
     bar_width = width - 16
-    filled_chars = int(percent * bar_width)
+    filled_chars = int(percent * bar_width)+1
+    if filled_chars > bar_width:
+        filled_chars = bar_width
     # draw characters for actual progress bar
     def draw_bar_portion(texture, count, start_index):
         num_chars = len(texture)
@@ -94,7 +101,9 @@ def draw_bar_text(percent, width = DEFAULT_WIDTH, duration_so_far = None, filled
                     chars_written += space_left
     offset = int(duration_so_far*4)
     draw_bar_portion(filled_and_unfilled[0], filled_chars, offset)
+    if __has_colorama: sys.stdout.write(colorama.Style.DIM)
     draw_bar_portion(filled_and_unfilled[1], bar_width - filled_chars, filled_chars + offset)
+    if __has_colorama: sys.stdout.write(colorama.Style.RESET_ALL)
     # 8 characters for percentage
     sys.stdout.write(" %5.1f%% " % (percent*100))  # total width 5, 1 decimal value
     if duration_so_far is not None:
@@ -103,7 +112,7 @@ def draw_bar_text(percent, width = DEFAULT_WIDTH, duration_so_far = None, filled
             total_time_expected = (duration_so_far / percent)
             seconds = total_time_expected - duration_so_far + 0.5
             t = timing(seconds, 8)
-            sys.stdout.write("%-8s " % t)
+            sys.stdout.write("%-7s " % t)
         else:
             sys.stdout.write("         ")
     sys.stdout.flush()
@@ -133,22 +142,29 @@ def print_finished(process_name, width = None, seconds = None):
     :param width: how many characters were used for the progressbar. if None, use the DEFAULT_WIDTH
     :type width: int, None
     :param seconds: how many seconds have passed. if None, calculate automatically
-    :type width: int, None
-    :return: None
+    :type width: int, float, None
+    :return: the number of seconds that the process took
+    :rtype: int, float
     """
 
     if width == None:
         width = DEFAULT_WIDTH
     print(("%-"+str(width)+"s  ") % (process_name+" took "+timing(seconds)))
+    if seconds == None:
+        import time
+        seconds = time.time() - GLOBAL_PROGRESS_BAR_START
+    return seconds
 
 
 if __name__ == "__main__":
+    if not __has_colorama:
+        print("consider installing colorama with: python -m pip install colorama --user")
     import time, random
     # an example of how to make a progress bar
     filledPercent = 0
     t_start = time.time()
     while filledPercent < 1:
-        draw_bar(filledPercent, 40, time.time() - t_start, ("@@@0","-~"))
+        draw_bar(filledPercent, 40, time.time() - t_start, ("/-\\|","-~"))
         time.sleep(random.random()*0.25)  # some time consuming operation goes here...
         filledPercent += 0.0125  # estimate addition to progress
     # sys.stdout.write("\n")
@@ -165,6 +181,6 @@ if __name__ == "__main__":
     # another example
     limit = 120
     for i in range(limit):
-        draw_bar(float(i)/limit, filled_and_unfilled = ("__processing","."))
+        draw_bar(float(i)/limit, filled_and_unfilled = ("##PROCESSING","  processing"))
         time.sleep(random.random()*0.2)  # some time consuming operation goes here...
     print_finished("process")
