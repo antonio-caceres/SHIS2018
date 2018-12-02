@@ -172,8 +172,6 @@ class NetworkTrainer:
                 index = i
                 largest = num_correct_list[-1]
         return file_list, index
-
-
         # PROGRESS_BAR_DISPLAY_SIZE = 30  # set this to None to turn off progress bar output
         # if PROGRESS_BAR_DISPLAY_SIZE is not None:
         #     import ProgressBar, time, sys
@@ -231,6 +229,6 @@ if __name__ == "__main__":
     rate = .3
     name = "MNIST Digits"
     trainer = NetworkTrainer(size, learning_rate=rate, num_trials=3, num_epochs=24000, batch_size=5, dataset_name=name)
-    file_list, i = trainer.training(num_networks=5)
-    print(file_list[i])
-    net = Processor.read_net_file(file_list[i])
+    file_name_list, name_index = trainer.training(num_networks=5)
+    print(file_name_list[name_index])
+    best_net = Processor.read_net_file(file_name_list[name_index])
