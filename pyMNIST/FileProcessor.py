@@ -1,9 +1,10 @@
 import os
-import sys
 import imageio
+import time
 import numpy as np
 from utils import mnist_reader
 import FeedforwardNeuralNet
+import ProgressBar
 
 
 def process_mnist_data(dataset_name):
@@ -19,12 +20,22 @@ def process_mnist_data(dataset_name):
         :param input_list: a list of lists of integers, where each list is one input.
         :return: a list of numpy column arrays with length 784, with floats between 0 and 1.
         """
+        # Progress Bar
+        start_time = time.time()
+        print("Processing Input")
+        ProgressBar.draw_bar(0, 30, 0)
+        progress = 0
+
         processed_inputs = []
         for old_input in input_list:
             new_input = []
             for integer in old_input:
                 new_input.append([integer / 256.0])
             processed_inputs.append(np.array(new_input))
+
+            progress += 1.0
+            ProgressBar.draw_bar(progress / len(input_list), 30, time.time() - start_time)
+        print("Input processing took " + ProgressBar.timing(time.time() - start_time) + ".")
         return processed_inputs
 
     def process_mnist_output(output_list):
@@ -34,6 +45,11 @@ def process_mnist_data(dataset_name):
         :param output_list: a list of integers, where each integer is one output.
         :return: a list of numpy arrays with length 10, with 0 at all indices except the integer from data_list
         """
+        start_time = time.time()
+        print("Processing Output")
+        ProgressBar.draw_bar(0, 30, 0)
+        progress = 0
+
         processed_outputs = []
         for old_output in output_list:
             new_output = []
@@ -43,6 +59,10 @@ def process_mnist_data(dataset_name):
                 else:
                     new_output.append([0])
             processed_outputs.append(np.array(new_output))
+
+            progress += 1.0
+            ProgressBar.draw_bar(progress / len(output_list), 30, time.time() - start_time)
+        print("Input processing took " + ProgressBar.timing(time.time() - start_time) + ".")
         return processed_outputs
 
     data = "data/" + dataset_name.lower()
@@ -52,47 +72,6 @@ def process_mnist_data(dataset_name):
     train_io = zip(process_mnist_input(x_train), process_mnist_output(y_train))
     test_io = zip(process_mnist_input(x_test), process_mnist_output(y_test))
     return train_io, test_io
-    # TODO: Implement progress bar
-    # t_start = 0
-    # if PROGRESS_BAR_DISPLAY_SIZE is not None:
-    #     t_start = time.time()
-    #     print("processing input...")
-    #     ProgressBar.draw_bar(0, PROGRESS_BAR_DISPLAY_SIZE, 0)
-    #     progress = 0
-    # processed_inputs = []
-    # for old_input in data_list:
-    #     new_input = []
-    #     for integer in old_input:
-    #         new_input.append([integer / 256.0])
-    #     processed_inputs.append(np.array(new_input))
-    #     if PROGRESS_BAR_DISPLAY_SIZE is not None:
-    #         progress += 1.0
-    #         ProgressBar.draw_bar(progress / len(data_list), PROGRESS_BAR_DISPLAY_SIZE, time.time() - t_start)
-    # if PROGRESS_BAR_DISPLAY_SIZE is not None:
-    #     sys.stdout.write("processing input took " + ProgressBar.timing(time.time() - t_start, 8) + "\n")
-    # return processed_inputs
-
-    # t_start = 0
-    # if PROGRESS_BAR_DISPLAY_SIZE is not None:
-    #     t_start = time.time()
-    #     print("processing output...")
-    #     ProgressBar.draw_bar(0, PROGRESS_BAR_DISPLAY_SIZE, 0)
-    #     progress = 0
-    # processed_outputs = []
-    # for old_output in data_list:
-    #     new_output = []
-    #     for i in range(10):
-    #         if i == old_output:
-    #             new_output.append([1])
-    #         else:
-    #             new_output.append([0])
-    #     processed_outputs.append(np.array(new_output))
-    #     if PROGRESS_BAR_DISPLAY_SIZE is not None:
-    #         progress += 1.0
-    #         ProgressBar.draw_bar(progress / len(data_list), PROGRESS_BAR_DISPLAY_SIZE, time.time() - t_start)
-    # if PROGRESS_BAR_DISPLAY_SIZE is not None:
-    #     sys.stdout.write("processing output took " + ProgressBar.timing(time.time() - t_start, 8) + "\n")
-    # return processed_outputs
 
 
 def user_drawings_to_inputs(path, base_title):  # data/user
@@ -129,10 +108,10 @@ def draw_input_to_ascii(input_list):
             char = '.'
             if input_list[0][i] != 0:
                 char = '#'
-            sys.stdout.write(char)
+            print(char, end='')
             i += 1
-        sys.stdout.write("\n")
-    sys.stdout.write("\n")
+        print("\n", end='')
+    print("\n", end='')
 
 
 def write_net_file(net, dataset_name, num_trials, num_epochs, batch_size, num_correct_list):

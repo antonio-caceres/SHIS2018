@@ -1,7 +1,7 @@
+import time
 import numpy as np
 import FileProcessor as Processor
-# import ProgressBar
-# TODO: Implement progress bar code into the neural network trainer.
+import ProgressBar
 
 
 class NeuralNet:
@@ -158,12 +158,22 @@ class NetworkTrainer:
         largest = 0
         index = -1
         for i in range(num_networks):
+            start_time = time.time()
+            print("Training Network ", i)
+            ProgressBar.draw_bar(0, 30, 0)
+            progress = 0
+
             net = NeuralNet(self.net_size, self.learning_rate)
             num_correct_list = []
-            for j in range(self.num_trials):
-                net.stochastic_training_input(self.train_inputs_outputs, self.num_epochs, self.batch_size)
+            for trial_num in range(self.num_trials):
+                def update_progress_bar(epoch_index):
+                    epochs_completed = float(trial_num) * self.num_epochs + float(epoch_index)
+                    epochs_total = self.num_epochs * self.num_trials
+
+                net.stochastic_training_input(self.train_inputs_outputs, self.num_epochs, self.batch_size,
+                                              update_progress_bar)
                 num_correct_list.append(self.testing(net))
-                print(num_correct_list[j])
+                print(num_correct_list[trial_num])
             file_name = Processor.write_net_file(net, self.name,
                                                  self.num_trials, self.num_epochs, self.batch_size,
                                                  num_correct_list)
@@ -172,34 +182,6 @@ class NetworkTrainer:
                 index = i
                 largest = num_correct_list[-1]
         return file_list, index
-        # PROGRESS_BAR_DISPLAY_SIZE = 30  # set this to None to turn off progress bar output
-        # if PROGRESS_BAR_DISPLAY_SIZE is not None:
-        #     import ProgressBar, time, sys
-        # t_start = 0
-        # if PROGRESS_BAR_DISPLAY_SIZE != None:
-        #     t_start = time.time()
-        #     print("ann training...")
-        #     ProgressBar.draw_bar(0, PROGRESS_BAR_DISPLAY_SIZE, 0)
-        # for i in range(self.num_trials):
-        #     if PROGRESS_BAR_DISPLAY_SIZE != None:
-        #         def update_progress_bar_on_epoch(epoch_index):
-        #             ProgressBar.draw_bar((float(i) / num_trials) + (float(epoch_index) / (num_epochs * num_trials)),
-        #                                  PROGRESS_BAR_DISPLAY_SIZE, time.time() - t_start)
-        #
-        #         net.stochastic_training_input(train_data, num_epochs, batch_size, update_progress_bar_on_epoch)
-        #     else:
-        #     net.stochastic_training_input(train_data, num_epochs, batch_size)
-        #     num_correct = test_neural_net(net, test_data)
-        #     num_correct_list.append(num_correct)
-        #     if PROGRESS_BAR_DISPLAY_SIZE != None:
-        #         ProgressBar.draw_bar_text(float(i + 1) / num_trials, PROGRESS_BAR_DISPLAY_SIZE, time.time() - t_start)
-        #         sys.stdout.write("Correct " + str(num_correct_list) + "\r")
-        #     else:
-        #         print("Correct: ", i, ": ", num_correct)
-        # if PROGRESS_BAR_DISPLAY_SIZE != None:
-        #     sys.stdout.write("ann training took " + ProgressBar.timing(time.time() - t_start, 12) + "\n")
-        # WeightFileReaderWriter.write_weights(net, dataset_name, num_trials, num_epochs, batch_size, num_correct_list)
-    # if PROGRESS_BAR_DISPLAY_SIZE != None: print("")
 
     def testing(self, net):
         """
@@ -228,7 +210,7 @@ if __name__ == "__main__":
     size = [28*28, 26*26, 7*7, 10]
     rate = .3
     name = "MNIST Digits"
-    trainer = NetworkTrainer(size, learning_rate=rate, num_trials=3, num_epochs=24000, batch_size=5, dataset_name=name)
+    trainer = NetworkTrainer(size, learning_rate=rate, num_trials=3, num_epochs=12000, batch_size=5, dataset_name=name)
     file_name_list, name_index = trainer.training(num_networks=5)
     print(file_name_list[name_index])
     best_net = Processor.read_net_file(file_name_list[name_index])
