@@ -10,7 +10,7 @@ import pygame
 import os
 import random
 from pygame.locals import *  # for QUIT and other state/type info
-
+import numpy as np
 
 class DigitDrawing:
     # Drawing Area Constants
@@ -43,7 +43,6 @@ class DigitDrawing:
     def init_values(self):
         self.width = 28
         self.height = 28
-        import numpy as np
         self.values = np.array([[0.0]]*self.width*self.height)
 
     def get(self, x, y = None):
@@ -74,6 +73,44 @@ class DigitDrawing:
         self.window_surface.fill(DigitDrawing.WHITE)
         self.window_surface.blit(text, text_rect)
 
+        # test code
+        """
+        DigitDrawing.brush_to_values_raster([
+            "                            ",
+            "      ######                ",
+            "     ########               ",
+            "    ###   ####              ",
+            "   ##       ###             ",
+            "   #         ###            ",
+            " ##           ##            ",
+            "              ##            ",
+            "              #             ",
+            "              #             ",
+            "              #             ",
+            "             #              ",
+            "            #               ",
+            "           #                ",
+            "          #                 ",
+            "         #                  ",
+            "         #                  ",
+            "        ##                  ",
+            "        ##                  ",
+            "       ###                  ",
+            "       ##                   ",
+            "      ####              #   ",
+            "      #####             ##  ",
+            "     ###############   ###  ",
+            "     ####################   ",
+            "                  ######    ",
+            "                            ",
+        ],self.values, self.width, self.height, 0.1)
+        positions = DigitDrawing.range_of_shiftable_positions(self.values, self.width, self.height)
+        for delta in positions:
+            print(delta)
+            DigitDrawing.shift_all_values(self.values, self.width, self.height, delta)
+            DigitDrawing.terminal_print(self.values, self.width, self.height)
+        """
+
         pygame.display.update()
         self.game_loop()
 
@@ -95,6 +132,7 @@ class DigitDrawing:
                     self.clicking = (1, -1)[event.button == 3]
                     raster_pos = DigitDrawing.get_raster_position(event.pos)
                     self.add_brush_to_values_at(raster_pos)
+                    self.clamp_values()
                     self.raster_must_redraw = True
                 elif event.type == MOUSEBUTTONUP:
                     self.clicking = False
@@ -102,6 +140,7 @@ class DigitDrawing:
                     if self.clicking:
                         raster_pos = DigitDrawing.get_raster_position(event.pos)
                         self.add_brush_to_values_at(raster_pos)
+                        self.clamp_values()
                         self.raster_must_redraw = True
             if self.raster_must_redraw:
                 self.draw_raster()
@@ -172,34 +211,92 @@ class DigitDrawing:
         del pix_array
         pygame.image.save(surf, image_name)
 
+    def add_to_values_at(self, pos):
+        ink = self.clicking
+        ink *= 1.0/self.MAX_VALUES
+        DigitDrawing.add_to_values_at_static(pos, ink, self.get, self.set,self.width, self.height)
+
     def add_brush_to_values_at(self, xy_pos):
         for r in range(len(self.BRUSH)):
             for c in range(len(self.BRUSH[r])):
                 if self.BRUSH[r][c] != ' ':
                     self.add_to_values_at((xy_pos[0] + c, xy_pos[1] + r))
 
-    def add_to_values_at(self, pos):
-        ink = self.clicking
-        ink *= 1.0/self.MAX_VALUES
-        if 0 <= pos[0] < DigitDrawing.WIDTH and 0 <= pos[1] < DigitDrawing.HEIGHT:
-            r, c = int(pos[1]), int(pos[0])
-            up, dn, lf, rt = pos[1] - r < .5, pos[1] - r > .5, pos[0] - c < .5, pos[0] - c > .5
-            self.set(c,r, self.get(c,r)+ink * 5)
-            if r > 0 and up:
-                self.set(c,r-1, self.get(c,r-1) + ink * 2)
-                if c > 0 and lf: self.set(c-1,r-1, self.get(c-1,r-1) + ink * 1)
-                if c > DigitDrawing.WIDTH - 1 and rt: self.set(c+1,r-1, self.get(c+1,r-1) + ink * 1)
-            if c > 0 and lf:
-                self.set(c-1,r,self.get(c-1,r) + ink * 2)
-            if r < DigitDrawing.HEIGHT - 1 and dn:
-                self.set(c,r+1, self.get(c,r+1) + ink * 2)
-                if c > 0 and lf: self.set(c-1,r+1, self.get(c-1,r+1) + ink * 1)
-                if c > DigitDrawing.WIDTH - 1 and rt: self.set(c+1,r+1, self.get(c+1,r+1) + ink * 1)
-            if c > DigitDrawing.WIDTH - 1 and rt:
-                self.set(c+1,r, self.get(c+1,r)+ ink * 2)
+    def clamp_values(self):
 
-    # TODO def range_of_shiftable_positions(values, width, height):
-    # returns a list of tuples, x/y deltas to pass into shift_all_values in a for loop. eg: an exhaustive shift if the image could be shifted 2left,1up or 2right,1down would look like [(-2,-1),(1,0),(1,0),(1,0),(-4,1),(1,0),(1,0),(1,0),(-4,1),(1,0),(1,0),(1,0)]
+        for i in range(len(self.values)):
+            self.values[i][0] = np.clip(self.values[i][0],0,1)
+
+    @staticmethod
+    def terminal_print(values, width, height):
+        import sys
+        for row in range(height):
+            for col in range(width):
+                v = ('.','#')[values[row*28+col][0]!=0]
+                sys.stdout.write(v)
+            sys.stdout.write('\n')
+
+    @staticmethod
+    def add_to_values_at_static(pos, ink, get, set, width, height):
+        """
+        'draws' pixels at the target location using set, and possibly in surrounding pixels
+        :param pos: where
+        :param ink: how much to add, as a fraction of 1. should be less than 1, because it is multiplied by up to 5. can be negative!
+        :param get: callback. how to get a value: get(x, y)
+        :param set: callback. how to set a value: set(x, y, value)
+        :param width: boundary limit for width (0 is assumed as min)
+        :param height: boundary limit for height (0 is assumed as min)
+        """
+        if 0 <= pos[0] < width and 0 <= pos[1] < height:
+            r, c = int(pos[1]), int(pos[0])
+            up, dn, lf, rt = pos[1] - r <= .5, pos[1] - r >= .5, pos[0] - c <= .5, pos[0] - c >= .5
+            set(c,r, get(c,r)+ink * 5)
+            if r > 0 and up:
+                set(c,r-1, get(c,r-1) + ink * 2)
+                if c > 0 and lf: set(c-1,r-1, get(c-1,r-1) + ink * 1)
+                if c > width - 1 and rt: set(c+1,r-1, get(c+1,r-1) + ink * 1)
+            if c > 0 and lf:
+                set(c-1,r,get(c-1,r) + ink * 2)
+            if r < height - 1 and dn:
+                set(c,r+1, get(c,r+1) + ink * 2)
+                if c > 0 and lf: set(c-1,r+1, get(c-1,r+1) + ink * 1)
+                if c > width - 1 and rt: set(c+1,r+1, get(c+1,r+1) + ink * 1)
+            if c > width - 1 and rt:
+                set(c+1,r, get(c+1,r)+ ink * 2)
+
+    @staticmethod
+    def brush_to_values_raster(brush, values, width, height, intensity):
+        """
+        :param values: if None, will create a new values raster that is width x height sized
+        :return: values
+        """
+        index = 0
+        if type(values) != np.ndarray and values == None:
+            values = np.array([[0.0]]*width*height)
+        def get(x,y):
+            return values[y*width+x][0]
+        def set(x,y,value):
+            values[y*width+x][0] = value
+        for r in range(len(brush)):
+            for c in range(len(brush[r])):
+                if brush[r][c] != ' ':
+                    DigitDrawing.add_to_values_at_static((c+0.5,r+0.5), intensity, get, set, width, height)
+        return values
+
+
+    @staticmethod
+    def range_of_shiftable_positions(values, width, height):
+        bounds = DigitDrawing.bound_box_of_values(values, width, height)
+        result = []
+        dx, dy = bounds[1][0] - bounds[0][0], bounds[1][1] - bounds[0][1]
+        result.append((-bounds[0][0], -bounds[0][1]))
+        for r in range(height-dy):
+            if dx > 0:
+                for c in range(width-dx-1):
+                    result.append((+1,0))
+            if r < height-dy-1:
+                result.append((-(width-dx-1),+1))
+        return result
 
     @staticmethod
     def shift_all_values(values, width, height, xy_delta):
@@ -291,10 +388,8 @@ class DigitDrawing:
         :param v: a value between 0 and MAX_VALUES.
         :return: a tuple of three of the same integers between 0 and 255, representing a shade of grey.
         """
-        if v <= 0:
-            return DigitDrawing.WHITE
-        if v > 1: #DigitDrawing.MAX_VALUES:
-            v = 1 #DigitDrawing.MAX_VALUES
+        if v <= 0: return DigitDrawing.WHITE
+        if v > 1: v = 1
         v = 255 - int(255 * v)
         return v, v, v
 
