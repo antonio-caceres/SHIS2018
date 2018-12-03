@@ -24,7 +24,7 @@ def process_mnist_data(dataset_name):
         start_time = time.time()
         print("Processing Input")
         ProgressBar.draw_bar(0, 30, 0)
-        progress = 0
+        inputs_completed = 0
 
         processed_inputs = []
         for old_input in input_list:
@@ -33,9 +33,9 @@ def process_mnist_data(dataset_name):
                 new_input.append([integer / 256.0])
             processed_inputs.append(np.array(new_input))
 
-            progress += 1.0
-            ProgressBar.draw_bar(progress / len(input_list), 30, time.time() - start_time)
-        print("Input processing took " + ProgressBar.timing(time.time() - start_time) + ".")
+            inputs_completed += 1.0
+            ProgressBar.draw_bar(inputs_completed / len(input_list), 30, time.time() - start_time)
+        print("Input processing took " + ProgressBar.time_to_string(time.time() - start_time) + ".")
         return processed_inputs
 
     def process_mnist_output(output_list):
@@ -48,7 +48,7 @@ def process_mnist_data(dataset_name):
         start_time = time.time()
         print("Processing Output")
         ProgressBar.draw_bar(0, 30, 0)
-        progress = 0
+        outputs_completed = 0
 
         processed_outputs = []
         for old_output in output_list:
@@ -60,17 +60,17 @@ def process_mnist_data(dataset_name):
                     new_output.append([0])
             processed_outputs.append(np.array(new_output))
 
-            progress += 1.0
-            ProgressBar.draw_bar(progress / len(output_list), 30, time.time() - start_time)
-        print("Input processing took " + ProgressBar.timing(time.time() - start_time) + ".")
+            outputs_completed += 1.0
+            ProgressBar.draw_bar(outputs_completed / len(output_list), 30, time.time() - start_time)
+        print("Output processing took " + ProgressBar.time_to_string(time.time() - start_time) + ".")
         return processed_outputs
 
     data = "data/" + dataset_name.lower()
     x_train, y_train = mnist_reader.load_mnist(data, kind='train')
     x_test, y_test = mnist_reader.load_mnist(data, kind='t10k')
 
-    train_io = zip(process_mnist_input(x_train), process_mnist_output(y_train))
-    test_io = zip(process_mnist_input(x_test), process_mnist_output(y_test))
+    train_io = list(zip(process_mnist_input(x_train), process_mnist_output(y_train)))
+    test_io = list(zip(process_mnist_input(x_test), process_mnist_output(y_test)))
     return train_io, test_io
 
 

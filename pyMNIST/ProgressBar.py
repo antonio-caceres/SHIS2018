@@ -12,7 +12,7 @@ if not __has_colorama:  # colorama abstracts colors in the terminal
         import colorama
 
 
-def timing(seconds=None, max_num_units=None):
+def time_to_string(seconds=None, max_num_units=None):
     """
     Produce a printable string to represent a time in days, hours, minutes, and seconds,
     with the specified number of "significant units".
@@ -23,7 +23,7 @@ def timing(seconds=None, max_num_units=None):
         For example, if a time is in hours, minutes, and seconds, limiting max_num_units to two produces a string that
         only includes the hours and minutes. if not None, limits size of the returned string (default None).
     :type max_num_units: int, None
-    :return: seconds converted into more human-readable form, eg: timing(3805) -> " 1h 3m 25s"
+    :return: seconds converted into more human-readable form, eg: time_to_string(3805) -> " 1h 3m 25s"
     :rtype: str
     """
     if seconds is None:
@@ -48,7 +48,7 @@ def timing(seconds=None, max_num_units=None):
     used = 0
     for j in range(len(unit_names)):
         if unit_values[j] != 0:
-            output += "{:2d}{} ".format(int(unit_values[j]), unit_names[j])
+            output += "{:02d}{} ".format(int(unit_values[j]), unit_names[j])
             used += 1
         if used >= max_num_units:
             break
@@ -115,7 +115,7 @@ def draw_bar(percent, width=DEFAULT_WIDTH, duration_so_far=None, filled_and_unfi
         if duration_so_far != 0 and percent != 0:
             total_time_expected = (duration_so_far / percent)
             seconds = total_time_expected - duration_so_far + 0.5
-            t = timing(seconds, 2)
+            t = time_to_string(seconds, 2)
             print("%-7s " % t, end='')
         else:
             print("         ", end='')
@@ -137,7 +137,7 @@ def print_finished(process_name, width=None, seconds=None):
 
     if width is None:
         width = DEFAULT_WIDTH
-    print(("%-"+str(width)+"s  ") % (process_name+" took "+timing(seconds)))
+    print(("%-"+str(width)+"s  ") % (process_name +" took " + time_to_string(seconds)))
     if seconds is None:
         import time
         seconds = time.time() - GLOBAL_PROGRESS_BAR_START
@@ -155,7 +155,7 @@ if __name__ == "__main__":
         time.sleep(random.random()*0.25)  # some time consuming operation goes here...
         filledPercent += 0.0125  # estimate addition to progress
     # print('')
-    print("%-40s" % ("process took "+timing(time.time()-t_start)))
+    print("%-40s" % ("process took " + time_to_string(time.time() - t_start)))
 
     # another example
     filledPercent = 0
@@ -164,7 +164,7 @@ if __name__ == "__main__":
         # but only if there is only one progress bar being used right now
         time.sleep(random.random()*0.25)  # some time consuming operation goes here...
         filledPercent += 0.0125  # estimate addition to progress
-    print("%-40s" % ("process took "+timing()))
+    print("%-40s" % ("process took " + time_to_string()))
 
     # another example
     limit = 120

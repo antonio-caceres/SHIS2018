@@ -159,9 +159,8 @@ class NetworkTrainer:
         index = -1
         for i in range(num_networks):
             start_time = time.time()
-            print("Training Network ", i)
+            print(f"Training Network {i}")
             ProgressBar.draw_bar(0, 30, 0)
-            progress = 0
 
             net = NeuralNet(self.net_size, self.learning_rate)
             num_correct_list = []
@@ -169,11 +168,15 @@ class NetworkTrainer:
                 def update_progress_bar(epoch_index):
                     epochs_completed = float(trial_num) * self.num_epochs + float(epoch_index)
                     epochs_total = self.num_epochs * self.num_trials
+                    ProgressBar.draw_bar(epochs_completed / epochs_total, 30, time.time() - start_time)
 
                 net.stochastic_training_input(self.train_inputs_outputs, self.num_epochs, self.batch_size,
                                               update_progress_bar)
                 num_correct_list.append(self.testing(net))
-                print(num_correct_list[trial_num])
+            print("Network training took " + ProgressBar.time_to_string(time.time() - start_time) + ".")
+
+            for j in range(len(num_correct_list)):
+                print(f"Trial {j}: {num_correct_list[j]} correct testing images.")
             file_name = Processor.write_net_file(net, self.name,
                                                  self.num_trials, self.num_epochs, self.batch_size,
                                                  num_correct_list)
@@ -190,7 +193,7 @@ class NetworkTrainer:
         :return: number of testing inputs that the neural network classified correctly
         """
         def get_largest_output(output_list):
-            index, largest = -1  # placeholders for champions
+            index, largest = -1, -1  # placeholders for champions
             for n in range(len(output_list)):
                 if output_list[n][0] > largest:
                     index = n
