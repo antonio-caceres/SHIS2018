@@ -7,6 +7,7 @@ import FeedforwardNeuralNet
 import ProgressBar
 
 
+# Data Processing
 def process_mnist_data(dataset_name):
     """
     Process a dataset with the format used by MNIST, present in the 'data' folder.
@@ -74,7 +75,7 @@ def process_mnist_data(dataset_name):
     return train_io, test_io
 
 
-def user_drawings_to_inputs(path, base_title):  # data/user
+def user_drawings_to_inputs(path, base_title):
     """
     From a folder of user drawings, convert them into a format that can be processed by a neural network.
     :param path: the folder to get the user drawings from
@@ -105,15 +106,14 @@ def draw_input_to_ascii(input_list):
     i = 0
     for r in range(28):
         for c in range(28):
-            char = '.'
-            if input_list[0][i] != 0:
-                char = '#'
+            char = ('.', '#')[input_list[r * 28 + c][0] != 0]
             print(char, end='')
             i += 1
-        print("\n", end='')
-    print("\n", end='')
+        print("")
+    print("")
 
 
+# Handling Neural Network Information Files
 def write_net_file(net, dataset_name, num_trials, num_epochs, batch_size, num_correct_list):
     """
     Create a file containing all the information about a neural net after training.
@@ -130,7 +130,7 @@ def write_net_file(net, dataset_name, num_trials, num_epochs, batch_size, num_co
         file.write("Dataset: " + dataset_name + "\n\n")
         file.write("Network Size: ")
         for num in net.size:
-            file.write(num + " ")
+            file.write(str(num) + " ")
         file.write("\nLearning Rate: " + str(net.learning_rate) + "\n"
                    "Number of Epochs: " + str(num_epochs) + "\n" +
                    "Batch Size: " + str(batch_size) + "\n\n")
@@ -194,6 +194,7 @@ def read_net_file(file_name):
     return net
 
 
+# Miscellaneous
 def get_complete_title(base, path, file_type):
     """
     Given a folder and a file name, add numbers to ensure the new file will not overwrite any existing files.
@@ -212,5 +213,5 @@ def get_complete_title(base, path, file_type):
             if item == title + file_type:
                 unique = False
         counter += 1
-    complete_title = path + "/" + title + ".txt"
+    complete_title = path + "/" + title + file_type
     return complete_title
