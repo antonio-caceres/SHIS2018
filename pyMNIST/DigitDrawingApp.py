@@ -200,7 +200,7 @@ def draw_raster(window):
 
 # Miscellaneous
 def save_bitmap_image():
-    image_name = FileProcessor.get_complete_title('Image', 'data/user', '.bmp')
+    image_name = FileProcessor.get_complete_title('Image', 'bitmap_images', '.bmp')
     surf = pygame.Surface((WIDTH, HEIGHT))
     surf.fill(WHITE)
     pix_array = pygame.PixelArray(surf)

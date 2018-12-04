@@ -127,7 +127,7 @@ class NeuralNet:
 
 class NetworkTrainer:
     def __init__(self, net_size, learning_rate=.1, num_trials=1, num_epochs=60000, batch_size=1,
-                 dataset_name="MNIST Digits"):
+                 dataset_name="mnist_digits"):
         """
         Generate an object to train a neural network.
         :param net_size: the size of the layers in the neural network to be initialized
@@ -136,7 +136,7 @@ class NetworkTrainer:
         :param num_epochs: the number of epochs to run during one trial
         :param batch_size: the number of inputs to process during one epoch
         :param dataset_name: the name of the dataset with which to train and test the neural network
-            Currently, the supported options are "MNIST Digits" and "MNIST Fashion".
+            Currently, the supported options are "mnist_digits" and "mnist_fashion".
         """
         self.net_size = net_size
         self.learning_rate = learning_rate
@@ -212,7 +212,7 @@ class NetworkTrainer:
 if __name__ == "__main__":
     size = [28*28, 26*26, 7*7, 10]
     rate = .3
-    name = "MNIST Digits"
+    name = "mnist_digits"
     trainer = NetworkTrainer(size, learning_rate=rate, num_trials=3, num_epochs=12000, batch_size=5, dataset_name=name)
     file_name_list, name_index = trainer.training(num_networks=5)
     print(file_name_list[name_index])

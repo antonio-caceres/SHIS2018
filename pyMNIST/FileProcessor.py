@@ -66,7 +66,7 @@ def process_mnist_data(dataset_name):
         print("Output processing took " + ProgressBar.time_to_string(time.time() - start_time) + ".")
         return processed_outputs
 
-    data = "data/" + dataset_name.lower()
+    data = "data/" + dataset_name
     x_train, y_train = mnist_reader.load_mnist(data, kind='train')
     x_test, y_test = mnist_reader.load_mnist(data, kind='t10k')
 
