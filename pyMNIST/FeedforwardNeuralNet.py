@@ -1,17 +1,17 @@
+import time
 import numpy as np
+import FileProcessor as Processor
+import ProgressBar
 
 
 class NeuralNet:
-    weight_matrices = []
-    bias_matrices = []
-    learning_rate = 0
-
     def __init__(self, neuron_layers, learning_rate=.1):
         """
         Generate a neural network with a specified number of layers and neurons.
-        :param neuron_layers: list of integers representing the number of neurons in each layer.
+        :param neuron_layers: list of integers representing the number of neurons in each layer
         :param learning_rate: learning rate of the neural network
         """
+        self.size = neuron_layers
         self.weight_matrices = []
         self.bias_matrices = []
         learning_rate = -np.abs(learning_rate)
@@ -39,12 +39,13 @@ class NeuralNet:
             output_values.append(output)
         return output_values
 
-    def stochastic_training_input(self, input_outputs, num_epochs, mini_batch_size, epoch_callback = None):
+    def stochastic_training_input(self, input_outputs, num_epochs, mini_batch_size, epoch_callback=None):
         """
         Run several iterations of the training process, backpropagating at the end
         :param input_outputs: a list of tuples of input arrays and their expected output arrays
         :param num_epochs: the number of times to train batches
-        :param mini_batch_size: the size of batches to use.
+        :param mini_batch_size: the size of batches to use
+        :param epoch_callback: a callback function to take the epoch number that just finished
         :return: None
         """
         if mini_batch_size > len(input_outputs):
@@ -60,17 +61,17 @@ class NeuralNet:
                 bias_deltas.append(np.zeros(x.shape))
             for i, o in io_batch:
                 layer_outputs = self.process_input(i)  # an array of matrices, same size as weight_matrices
-                layer_error = np.multiply((layer_outputs[-1] - o), self.der_sigmoid(layer_outputs[-1]))  # Hadamard
+                layer_error = np.multiply((layer_outputs[-1] - o), self.der_sigmoid(layer_outputs[-1]))
                 weight_deltas[-1] += np.matmul(layer_error, np.transpose(layer_outputs[-2]))  # from column -> row
                 bias_deltas[-1] += layer_error
-                for n in range(len(self.weight_matrices)-1):  # BACKPROPAGATION
+                for n in range(len(self.weight_matrices)-1):
                     # Each layer_output corresponds to a layer from the input to the output.
                     # Each weight_matrix corresponds to a layer from (input + 1) to the output.
                     # Each weight_ and bias_delta should corresponds to a layer from (input+1) to the output.
                     # We've already taken care of the output layer above.
                     a = np.dot(np.transpose(self.weight_matrices[-n-1]), layer_error)  # temporary value
                     b = self.der_sigmoid(layer_outputs[-n-2])  # temporary value
-                    layer_error = np.multiply(a, b)  # Hadamard matrix element-wise multiplication
+                    layer_error = np.multiply(a, b)
                     weight_deltas[-n - 2] += np.matmul(layer_error, np.transpose(layer_outputs[-n - 3]))
                     bias_deltas[-n - 2] += layer_error
             for i in range(len(self.weight_matrices)):
@@ -78,7 +79,7 @@ class NeuralNet:
                 self.weight_matrices[i] += weight_deltas[i]
                 bias_deltas[i] *= self.learning_rate / mini_batch_size
                 self.bias_matrices[i] += bias_deltas[i]
-            if epoch_callback != None:
+            if epoch_callback is not None:
                 epoch_callback(num+1)
 
     def input_from_output(self, output_values):
@@ -122,3 +123,97 @@ class NeuralNet:
     @staticmethod
     def anti_sigmoid(x):
         return -1 * np.log((1 / x) - 1)
+
+
+class NetworkTrainer:
+    def __init__(self, net_size, learning_rate=.1, num_trials=1, num_epochs=60000, batch_size=1,
+                 dataset_name="mnist_digits"):
+        """
+        Generate an object to train a neural network.
+        :param net_size: the size of the layers in the neural network to be initialized
+        :param learning_rate: the learning rate of the neural network to be initialized
+        :param num_trials: the number of trials over which to train one neural network
+        :param num_epochs: the number of epochs to run during one trial
+        :param batch_size: the number of inputs to process during one epoch
+        :param dataset_name: the name of the dataset with which to train and test the neural network
+            Currently, the supported options are "mnist_digits" and "mnist_fashion".
+        """
+        self.net_size = net_size
+        self.learning_rate = learning_rate
+        self.num_trials = num_trials
+        self.num_epochs = num_epochs
+        self.batch_size = batch_size
+        self.name = dataset_name
+        self.train_inputs_outputs, self.test_inputs_outputs = Processor.process_mnist_data(dataset_name)
+
+    def training(self, num_networks):
+        """
+        Train a certain number of randomly initialized networks, writing weight files for each network after
+        training and testing is completed.
+        :param num_networks: the number of new, randomly initialized networks to train with the dataset
+        :return: a list of file names and the index of the file name storing the information for the best network
+        :rtype: list, int
+        """
+        file_list = []
+        largest = 0
+        index = -1
+        for i in range(num_networks):
+            start_time = time.time()
+            print(f"Training Network {i}")
+            ProgressBar.draw_bar(0, 30, 0)
+
+            net = NeuralNet(self.net_size, self.learning_rate)
+            num_correct_list = []
+            for trial_num in range(self.num_trials):
+                def update_progress_bar(epoch_index):
+                    epochs_completed = float(trial_num) * self.num_epochs + float(epoch_index)
+                    epochs_total = self.num_epochs * self.num_trials
+                    ProgressBar.draw_bar(epochs_completed / epochs_total, 30, time.time() - start_time)
+
+                net.stochastic_training_input(self.train_inputs_outputs, self.num_epochs, self.batch_size,
+                                              update_progress_bar)
+                num_correct_list.append(self.testing(net))
+            print("Network training took " + ProgressBar.time_to_string(time.time() - start_time) + ".")
+
+            for j in range(len(num_correct_list)):
+                print(f"Trial {j}: {num_correct_list[j]} correct testing images.")
+            file_name = Processor.write_net_file(net, self.name,
+                                                 self.num_trials, self.num_epochs, self.batch_size,
+                                                 num_correct_list)
+            file_list.append(file_name)
+            if num_correct_list[-1] > largest:
+                index = i
+                largest = num_correct_list[-1]
+        return file_list, index
+
+    def testing(self, net):
+        """
+        Test a neural network.
+        :param net: trained neural network
+        :return: number of testing inputs that the neural network classified correctly
+        """
+        def get_largest_output(output_list):
+            index, largest = -1, -1  # placeholders for champions
+            for n in range(len(output_list)):
+                if output_list[n][0] > largest:
+                    index = n
+                    largest = output_list[n][0]
+            return index
+        correct_counter = 0
+        for i, o in self.test_inputs_outputs:
+            actual_list = net.process_input(i)[-1]
+            actual_index = get_largest_output(actual_list)
+            expected_index = get_largest_output(o)
+            if actual_index == expected_index:
+                correct_counter += 1
+        return correct_counter
+
+
+if __name__ == "__main__":
+    size = [28*28, 26*26, 7*7, 10]
+    rate = .3
+    name = "mnist_digits"
+    trainer = NetworkTrainer(size, learning_rate=rate, num_trials=3, num_epochs=12000, batch_size=5, dataset_name=name)
+    file_name_list, name_index = trainer.training(num_networks=5)
+    print(file_name_list[name_index])
+    best_net = Processor.read_net_file(file_name_list[name_index])

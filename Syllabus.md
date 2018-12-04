@@ -2,14 +2,14 @@
 ### Major Assigments
 **Python MNIST Digit Recognition**
 * Process the digit data set to randomize the location of the actual handwriting within the 28x28 input, ensuring the net can recognize handwriting that isn't in the center of the input.
+  * Add input read/write to files to the FileProcessor.
+  * Process the MNIST dataset into a different format to read it from there.
+  * Change the MNIST dataset, adding different translations of the images.
 * Train a multilayer feedforward network with the school computers, storing the sets of weights after training.
 * Add realtime neural net processing and 'brain confidence' to the Pygame drawing app for the demonstration.
 * Test an 'imagination function' of the *trained* neural net using the generalized inverse by:
   * Applying a function to the 'backwards outputs' of each layer to restrict the values to the intended range.
   * Restricting the values by just setting all negative values to 0 and all values greater than 1 to 1.
-* Rewrite the code in each of the files to be more Pythonic.
-  * Condense the testing files into potentially a single testing class and implementation file.
-  * Rewrite the Digit Drawing app as a single class, and add documentation explaining how it works.
 
 **Small Presentation**
 * Create a small, five-minute presentation to explain neural nets to beginners.
