@@ -137,7 +137,7 @@ def print_finished(process_name, width=None, seconds=None):
 
     if width is None:
         width = DEFAULT_WIDTH
-    print(("%-"+str(width)+"s  ") % (process_name +" took " + time_to_string(seconds)))
+    print(("%-"+str(width)+"s  ") % (process_name + " took " + time_to_string(seconds)))
     if seconds is None:
         import time
         seconds = time.time() - GLOBAL_PROGRESS_BAR_START

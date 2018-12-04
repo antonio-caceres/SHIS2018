@@ -215,3 +215,104 @@ def get_complete_title(base, path, file_type):
         counter += 1
     complete_title = path + "/" + title + file_type
     return complete_title
+
+
+# Data Augmentation
+def bound_box_of_values(input_list):
+    """
+    :param input_list: a one-dimensional numpy column array containing values for a handwritten digit.
+    Calculates the box of values surrounding the image in question.
+    :return: ((min_x, min_y), (max_x, max_y))
+    """
+    minimum, maximum = [28, 28], [-1, -1]
+    for r in range(28):
+        for c in range(28):
+            v = input_list[r * 28 + c][0]
+            if v != 0:
+                if c < minimum[0]:
+                    minimum[0] = c
+                if r < minimum[1]:
+                    minimum[1] = r
+                if c > maximum[0]:
+                    maximum[0] = c
+                if r > maximum[1]:
+                    maximum[1] = r
+    return (minimum[0], minimum[1]), (maximum[0], maximum[1])
+
+
+def calculate_shift_ranges(input_list):
+    """
+    :param input_list: a one-dimensional numpy column array containing values for a handwritten digit.
+    Calculates the maximum range by which to shift the image to reach the boundary
+    :return: ((max_left, max_right),(max_up, max_down))
+    """
+    bounds = bound_box_of_values(input_list)
+    x_range = (-bounds[0][0], 28 - bounds[1][0] - 1)
+    y_range = (-bounds[0][1], 28 - bounds[1][1] - 1)
+    return x_range, y_range
+
+
+def range_of_shiftable_positions(input_list):
+    """
+    :param input_list: a one-dimensional numpy column array containing values for a handwritten digit.
+    :return: a sequence of shift deltas to get every possible position of the input list within the bounds of the image.
+        Note that the sequence assumes that the image is moving.
+    """
+    bounds = bound_box_of_values(input_list)
+    result = []
+    dx, dy = bounds[1][0] - bounds[0][0], bounds[1][1] - bounds[0][1]
+    result.append((-bounds[0][0], -bounds[0][1]))
+    for r in range(28 - dy):
+        if dx > 0:
+            for c in range(28 - dx - 1):
+                result.append((+1, 0))
+        if r < 28 - dy - 1:
+            result.append((-(28 - dx - 1), +1))
+    return result
+
+
+def shift_all_values(input_list, xy_delta):
+    """
+    return a new list of inputs that is the original inputs shifted by the delta.
+    :param input_list: a one-dimensional numpy column array containing values for a handwritten digit.
+    :param xy_delta: a shift delta that produces a new position for the image in the input_list
+    :return:
+    """
+    # create a 2D array version of the 1D array
+    two_dim_copy = []
+    new_input_list = []
+    for r in range(28):
+        two_dim_copy.append([])
+        for c in range(28):
+            two_dim_copy[r].append(input_list[r * 28 + c][0])
+    for r in range(len(two_dim_copy)):
+        shift_list(two_dim_copy[r], xy_delta[0], 0)
+    shift_list(two_dim_copy, xy_delta[1], [0] * len(two_dim_copy[0]))
+    # copy it back now
+    for r in range(28):
+        for c in range(28):
+            new_input_list[r * 28 + c][0] = two_dim_copy[r][c]
+    return new_input_list
+
+
+def shift_list(values, delta, fill_extra_with=None):
+    """
+    Shift a list of inputs in-place a certain change delta.
+    :param values: the inputs to shift.
+    :param delta: the change with which to shift the inputs.
+    :param fill_extra_with: the value to fill the empty spaces with
+    :return: None
+    """
+    import copy
+    if delta < 0:  # go backwards, losing values at the front
+        for i in range(0, len(values) + delta):
+            values[i] = values[i - delta]
+        if fill_extra_with is not None:
+            for i in range(len(values) + delta, len(values)):
+                values[i] = copy.copy(fill_extra_with)
+    if delta > 0:
+        for i in range(len(values) - 1, -1, -1):
+            values[i] = values[i - delta]
+        if fill_extra_with is not None:
+            for i in range(delta - 1, -1, -1):
+                values[i] = copy.copy(fill_extra_with)

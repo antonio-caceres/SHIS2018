@@ -1,14 +1,10 @@
-# TODO: Rewrite this documentation
 """
-An extremely simple image editor for 28x28 black-and-white images, created by Mr. V for Antonio.
+An image editor for 28x28 gray-scale images, created by Mr. V for Antonio.
 Much of the code used in this project is from https://inventwithpython.com/pygameHelloWorld.py
-Install pygame using the Terminal:
-    sudo pip install pygame
-Install pip using the Terminal:
-    curl https://bootstrap.pypa.io/get-pip.py > get-pip.py
+Install pygame using the Terminal with: sudo pip install pygame
+Install pip using the Terminal with: curl https://bootstrap.pypa.io/get-pip.py > get-pip.py
 """
 import random
-import sys
 import numpy as np
 import pygame
 from pygame.locals import *  # for QUIT and other state/type info
@@ -119,24 +115,24 @@ def process_keyboard_input(user_event):
     elif user_event.key == 304:
         shift_is_pressed = True
 
-    # # Deals with the 'w', 'a', 's', 'd', and 'r' inputs.
-    # elif 32 <= user_event.key < 128 and chr(user_event.key) in "wasdr":
-    #     x_range, y_range = calculate_shift_ranges(values, WIDTH, HEIGHT)
-    #     shift_delta = (0, 0)
-    #     if user_event.key == ord('w') and (shift_is_pressed or y_range[0] < 0):
-    #         shift_delta = (0, -1)
-    #     elif user_event.key == ord('a') and (shift_is_pressed or x_range[0] < 0):
-    #         shift_delta = (-1, 0)
-    #     elif user_event.key == ord('s') and (shift_is_pressed or y_range[1] > 0):
-    #         shift_delta = (0, +1)
-    #     elif user_event.key == ord('d') and (shift_is_pressed or x_range[1] > 0):
-    #         shift_delta = (+1, 0)
-    #     elif user_event.key == ord('r'):
-    #         rnd_x = random.randint(x_range[0], x_range[1])
-    #         rnd_y = random.randint(y_range[0], y_range[1])
-    #         shift_delta = (rnd_x, rnd_y)
-    #     if shift_delta != (0, 0):
-    #         shift_all_values(values, WIDTH, HEIGHT, shift_delta)
+    # Deals with the 'w', 'a', 's', 'd', and 'r' inputs.
+    elif 32 <= user_event.key < 128 and chr(user_event.key) in "wasdr":
+        x_range, y_range = FileProcessor.calculate_shift_ranges(values)
+        shift_delta = (0, 0)
+        if user_event.key == ord('w') and (shift_is_pressed or y_range[0] < 0):
+            shift_delta = (0, -1)
+        elif user_event.key == ord('a') and (shift_is_pressed or x_range[0] < 0):
+            shift_delta = (-1, 0)
+        elif user_event.key == ord('s') and (shift_is_pressed or y_range[1] > 0):
+            shift_delta = (0, +1)
+        elif user_event.key == ord('d') and (shift_is_pressed or x_range[1] > 0):
+            shift_delta = (+1, 0)
+        elif user_event.key == ord('r'):
+            rnd_x = random.randint(x_range[0], x_range[1])
+            rnd_y = random.randint(y_range[0], y_range[1])
+            shift_delta = (rnd_x, rnd_y)
+        if shift_delta != (0, 0):
+            values = FileProcessor.shift_all_values(values, shift_delta)
 
 
 # Adjusting the Drawing and the Values
@@ -196,6 +192,17 @@ def draw_raster(window):
             y = Y_OFFSET + Y_SIZE * r
             pygame.draw.rect(window, get_color_from_value(get_val(c, r)),
                              (x, y, X_SIZE, Y_SIZE))
+
+
+def brush_to_values_raster(brush, intensity):
+    """
+    :param brush: the thing to draw.
+    :param intensity: how much to add, as a fraction of 1. to be passed to add_to_values_at_static.
+    """
+    for r in range(len(brush)):
+        for c in range(len(brush[r])):
+            if brush[r][c] != ' ':
+                add_to_values_at_static((c + 0.5, r + 0.5), intensity)
 
 
 # Miscellaneous
@@ -258,144 +265,36 @@ if __name__ == "__main__":
             raster_must_redraw = False
     pygame.quit()
 
-
-########################################################################################################################
-class DigitDrawing:
-    def initialize_application(self):
-        """
-        Initializes the pygame window, text, and drawing space.
-        """
-        # test code
-        """
-        DigitDrawing.brush_to_values_raster([
-            "                            ",
-            "      ######                ",
-            "     ########               ",
-            "    ###   ####              ",
-            "   ##       ###             ",
-            "   #         ###            ",
-            " ##           ##            ",
-            "              ##            ",
-            "              #             ",
-            "              #             ",
-            "              #             ",
-            "             #              ",
-            "            #               ",
-            "           #                ",
-            "          #                 ",
-            "         #                  ",
-            "         #                  ",
-            "        ##                  ",
-            "        ##                  ",
-            "       ###                  ",
-            "       ##                   ",
-            "      ####              #   ",
-            "      #####             ##  ",
-            "     ###############   ###  ",
-            "     ####################   ",
-            "                  ######    ",
-            "                            ",
-        ],self.values, self.width, self.height, 0.1)
-        positions = DigitDrawing.range_of_shiftable_positions(self.values, self.width, self.height)
-        for delta in positions:
-            print(delta)
-            DigitDrawing.shift_all_values(self.values, self.width, self.height, delta)
-            FileProcessor.draw_input_to_ascii(values)
-        """
-
-    @staticmethod
-    def brush_to_values_raster(brush, values, width, height, intensity):
-        """
-        :param values: if None, will create a new values raster that is width x height sized
-        :return: values
-        """
-        index = 0
-        if type(values) != np.ndarray and values == None:
-            values = np.array([[0.0]] * width * height)
-
-        def get(x, y):
-            return values[y * width + x][0]
-
-        def set(x, y, value):
-            values[y * width + x][0] = value
-
-        for r in range(len(brush)):
-            for c in range(len(brush[r])):
-                if brush[r][c] != ' ':
-                    DigitDrawing.add_to_values_at_static((c + 0.5, r + 0.5), intensity, get, set, width, height)
-        return values
-
-    @staticmethod
-    def range_of_shiftable_positions(values, width, height):
-        bounds = DigitDrawing.bound_box_of_values(values, width, height)
-        result = []
-        dx, dy = bounds[1][0] - bounds[0][0], bounds[1][1] - bounds[0][1]
-        result.append((-bounds[0][0], -bounds[0][1]))
-        for r in range(height - dy):
-            if dx > 0:
-                for c in range(width - dx - 1):
-                    result.append((+1, 0))
-            if r < height - dy - 1:
-                result.append((-(width - dx - 1), +1))
-        return result
-
-    @staticmethod
-    def shift_all_values(values, width, height, xy_delta):
-        # create a 2D array version of the 1D array
-        twoDcopy = []
-        for r in range(height):
-            twoDcopy.append([])
-            for c in range(width):
-                twoDcopy[r].append(values[r * width + c][0])
-        for r in range(len(twoDcopy)):
-            DigitDrawing.shift_list(twoDcopy[r], xy_delta[0], 0)
-        DigitDrawing.shift_list(twoDcopy, xy_delta[1], [0] * len(twoDcopy[0]))
-        # copy it back now
-        for r in range(height):
-            for c in range(width):
-                values[r * width + c][0] = twoDcopy[r][c]
-
-    @staticmethod
-    def calculate_shift_ranges(values, width, height):
-        """
-        Calculates the maximum range by which to shift the image to reach the boundary
-        :return: ((max_left, max_right),(max_up, max_down))
-        """
-        bounds = DigitDrawing.bound_box_of_values(values, width, height)
-        x_range = (-bounds[0][0], width - bounds[1][0] - 1)
-        y_range = (-bounds[0][1], height - bounds[1][1] - 1)
-        return x_range, y_range
-
-    @staticmethod
-    def bound_box_of_values(values, width, height):
-        """
-        Calculates the box of values surrounding the image in question.
-        :return: ((min_x,min_y),(max_x,max_y))
-        """
-        minimum, maximum = [width, height], [-1, -1]
-        for r in range(height):
-            for c in range(width):
-                v = values[r * width + c][0]
-                if v != 0:
-                    if c < minimum[0]: minimum[0] = c
-                    if r < minimum[1]: minimum[1] = r
-                    if c > maximum[0]: maximum[0] = c
-                    if r > maximum[1]: maximum[1] = r
-        return (minimum[0], minimum[1]), (maximum[0], maximum[1])
-
-    @staticmethod
-    def shift_list(values, delta, fill_extra_with=None):
-        import copy
-        if delta < 0:  # go backwards, losing values at the front
-            for i in range(0, len(values) + delta):
-                values[i] = values[i - delta]
-            if fill_extra_with is not None:
-                for i in range(len(values) + delta, len(values)):
-                    values[i] = copy.copy(fill_extra_with)
-        if delta > 0:
-            for i in range(len(values) - 1, -1, -1):
-                values[i] = values[i - delta]
-            if fill_extra_with is not None:
-                for i in range(delta - 1, -1, -1):
-                    values[i] = copy.copy(fill_extra_with)
-########################################################################################################################
+    brush_to_values_raster([
+        "                            ",
+        "      ######                ",
+        "     ########               ",
+        "    ###   ####              ",
+        "   ##       ###             ",
+        "   #         ###            ",
+        " ##           ##            ",
+        "              ##            ",
+        "              #             ",
+        "              #             ",
+        "              #             ",
+        "             #              ",
+        "            #               ",
+        "           #                ",
+        "          #                 ",
+        "         #                  ",
+        "         #                  ",
+        "        ##                  ",
+        "        ##                  ",
+        "       ###                  ",
+        "       ##                   ",
+        "      ####              #   ",
+        "      #####             ##  ",
+        "     ###############   ###  ",
+        "     ####################   ",
+        "                  ######    ",
+        "                            "], 0.1)
+    positions = FileProcessor.range_of_shiftable_positions(values)
+    for delta in positions:
+        print(delta)
+        FileProcessor.shift_all_values(values, delta)
+        FileProcessor.draw_input_to_ascii(values)
