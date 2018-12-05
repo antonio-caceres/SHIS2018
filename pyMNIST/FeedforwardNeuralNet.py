@@ -1,6 +1,7 @@
+import os
 import time
 import numpy as np
-import FileProcessor as Processor
+import FileProcessor
 import ProgressBar
 
 
@@ -144,7 +145,7 @@ class NetworkTrainer:
         self.num_epochs = num_epochs
         self.batch_size = batch_size
         self.name = dataset_name
-        self.train_inputs_outputs, self.test_inputs_outputs = Processor.read_mnist_data(dataset_name)
+        self.train_inputs_outputs, self.test_inputs_outputs = FileProcessor.read_mnist_data(dataset_name)
 
     def training(self, num_networks):
         """
@@ -154,9 +155,11 @@ class NetworkTrainer:
         :return: a list of file names and the index of the file name storing the information for the best network
         :rtype: list, int
         """
-        file_list = []
-        largest = 0
-        index = -1
+        num_correct_lists = []
+        file_names = []
+        path = 'weight_database/' + FileProcessor.get_complete_title(self.name + " Training", 'weight_database', '')
+        os.mkdir(path)
+
         for i in range(num_networks):
             start_time = time.time()
             print(f"Training Network {i}")
@@ -175,16 +178,15 @@ class NetworkTrainer:
                 num_correct_list.append(self.testing(net))
             print("Network training took " + ProgressBar.time_to_string(time.time() - start_time) + ".")
 
+            file_name = FileProcessor.write_net_file(net, self.name, path)
+            file_names.append(file_name)
+
             for j in range(len(num_correct_list)):
                 print(f"Trial {j}: {num_correct_list[j]} correct testing images.")
-            file_name = Processor.write_net_file(net, self.name,
-                                                 self.num_trials, self.num_epochs, self.batch_size,
-                                                 num_correct_list)
-            file_list.append(file_name)
-            if num_correct_list[-1] > largest:
-                index = i
-                largest = num_correct_list[-1]
-        return file_list, index
+            num_correct_lists.append(num_correct_list)
+        index = FileProcessor.write_meta_net_file(self.net_size, self.learning_rate, self.name,
+                                                  self.num_trials, self.num_epochs, self.batch_size, num_correct_lists)
+        return file_names, index
 
     def testing(self, net):
         """
@@ -212,8 +214,12 @@ class NetworkTrainer:
 if __name__ == "__main__":
     size = [28*28, 26*26, 7*7, 10]
     rate = .3
+    trials = 3
+    epochs = 12000
+    batch = 5
     name = "mnist_digits"
-    trainer = NetworkTrainer(size, learning_rate=rate, num_trials=3, num_epochs=12000, batch_size=5, dataset_name=name)
+    trainer = NetworkTrainer(size, learning_rate=rate,
+                             num_trials=trials, num_epochs=epochs, batch_size=batch, dataset_name=name)
     file_name_list, name_index = trainer.training(num_networks=5)
     print(file_name_list[name_index])
-    best_net = Processor.read_net_file(file_name_list[name_index])
+    best_net = FileProcessor.read_net_file(size, rate, file_name_list[name_index])
