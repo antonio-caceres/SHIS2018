@@ -1,6 +1,7 @@
 import os
 import imageio
 import time
+import pickle
 import numpy as np
 from utils import mnist_reader
 import FeedforwardNeuralNet
@@ -8,10 +9,10 @@ import ProgressBar
 
 
 # Data Processing
-def process_mnist_data(dataset_name):
+def write_mnist_data(dataset_name):
     """
-    Process a dataset with the format used by MNIST, present in the 'data' folder.
-    :param dataset_name: name of the folder within the 'data' folder to get the files from
+    Process a dataset with the format used by MNIST, present in the 'unprocessed' folder.
+    :param dataset_name: name of the folder within the 'unprocessed' folder to get the files from
     :return: a tuple with two zipped lists, the training input/outputs and the testing input/outputs
     """
     def process_mnist_input(input_list):
@@ -66,15 +67,33 @@ def process_mnist_data(dataset_name):
         print("Output processing took " + ProgressBar.time_to_string(time.time() - start_time) + ".")
         return processed_outputs
 
-    data = "data/" + dataset_name
+    data = 'unprocessed/' + dataset_name
     x_train, y_train = mnist_reader.load_mnist(data, kind='train')
     x_test, y_test = mnist_reader.load_mnist(data, kind='t10k')
 
     train_io = list(zip(process_mnist_input(x_train), process_mnist_output(y_train)))
     test_io = list(zip(process_mnist_input(x_test), process_mnist_output(y_test)))
+
+    training_title = 'data/' + dataset_name + '_training'
+    testing_title = 'data/' + dataset_name + '_testing'
+
+    pickle.dump(train_io, open(training_title, 'wb'))
+    pickle.dump(test_io, open(testing_title, 'wb'))
+
     return train_io, test_io
 
 
+def read_mnist_data(dataset_name):
+    training_title = 'data/' + dataset_name + '_training'
+    testing_title = 'data/' + dataset_name + '_testing'
+
+    train_io = pickle.load(open(training_title, 'wb'))
+    test_io = pickle.load(open(testing_title, 'wb'))
+
+    return train_io, test_io
+
+
+# This method is probably never going to be used but I'm going to leave it here.
 def user_drawings_to_inputs(path, base_title):
     """
     From a folder of user drawings, convert them into a format that can be processed by a neural network.
@@ -114,6 +133,7 @@ def draw_input_to_ascii(input_list):
 
 
 # Handling Neural Network Information Files
+# TODO: pickle network files
 def write_net_file(net, dataset_name, num_trials, num_epochs, batch_size, num_correct_list):
     """
     Create a file containing all the information about a neural net after training.
@@ -194,6 +214,9 @@ def read_net_file(file_name):
     return net
 
 
+# TODO Data Augmentation Pickle Files
+
+
 # Miscellaneous
 def get_complete_title(base, path, file_type):
     """
@@ -271,11 +294,11 @@ def range_of_shiftable_positions(input_list):
     return result
 
 
-def shift_all_values(input_list, xy_delta):
+def shift_all_values(input_values, xy_delta):
     """
     return a new list of inputs that is the original inputs shifted by the delta.
-    :param input_list: a one-dimensional numpy column array containing values for a handwritten digit.
-    :param xy_delta: a shift delta that produces a new position for the image in the input_list
+    :param input_values: a one-dimensional numpy column array containing values for a handwritten digit.
+    :param xy_delta: a shift delta that produces a new position for the image in the input_values
     :return:
     """
     # create a 2D array version of the 1D array
@@ -284,7 +307,7 @@ def shift_all_values(input_list, xy_delta):
     for r in range(28):
         two_dim_copy.append([])
         for c in range(28):
-            two_dim_copy[r].append(input_list[r * 28 + c][0])
+            two_dim_copy[r].append(input_values[r * 28 + c][0])
     for r in range(len(two_dim_copy)):
         shift_list(two_dim_copy[r], xy_delta[0], 0)
     shift_list(two_dim_copy, xy_delta[1], [0] * len(two_dim_copy[0]))

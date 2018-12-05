@@ -144,7 +144,7 @@ class NetworkTrainer:
         self.num_epochs = num_epochs
         self.batch_size = batch_size
         self.name = dataset_name
-        self.train_inputs_outputs, self.test_inputs_outputs = Processor.process_mnist_data(dataset_name)
+        self.train_inputs_outputs, self.test_inputs_outputs = Processor.read_mnist_data(dataset_name)
 
     def training(self, num_networks):
         """
