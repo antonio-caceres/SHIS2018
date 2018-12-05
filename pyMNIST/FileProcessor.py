@@ -81,11 +81,11 @@ def write_mnist_data(dataset_name):
 
 
 def read_mnist_data(dataset_name):
-    training_title = 'data/' + dataset_name + '_training'
-    testing_title = 'data/' + dataset_name + '_testing'
+    training_title = 'data/' + dataset_name + '_training' + '.pickle'
+    testing_title = 'data/' + dataset_name + '_testing' + '.pickle'
 
-    train_io = pickle.load(open(training_title, 'wb'))
-    test_io = pickle.load(open(testing_title, 'wb'))
+    train_io = pickle.load(open(training_title, 'rb'))
+    test_io = pickle.load(open(testing_title, 'rb'))
 
     return train_io, test_io
 
@@ -122,7 +122,9 @@ def draw_input_to_ascii(input_list):
     i = 0
     for r in range(28):
         for c in range(28):
-            char = ('.', '#')[input_list[r * 28 + c][0] != 0]
+            char = '.'
+            if input_list[r * 28 + c][0] != 0:
+                char = '#'
             print(char, end='')
             i += 1
         print("")
@@ -320,7 +322,6 @@ def shift_list(values, delta, fill_extra_with=None):
                 values[i] = copy.copy(fill_extra_with)
 
 
-# Temporary Data Processing
 if __name__ == "__main__":
     write_mnist_data('mnist_digits')
     write_mnist_data('mnist_fashion')
