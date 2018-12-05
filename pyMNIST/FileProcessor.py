@@ -11,9 +11,8 @@ import ProgressBar
 # Data Processing
 def write_mnist_data(dataset_name):
     """
-    Process a dataset with the format used by MNIST, present in the 'unprocessed' folder.
+    Writes pickle files that contain the mnist dataset to the data folder
     :param dataset_name: name of the folder within the 'unprocessed' folder to get the files from
-    :return: a tuple with two zipped lists, the training input/outputs and the testing input/outputs
     """
     def process_mnist_input(input_list):
         """
@@ -74,13 +73,11 @@ def write_mnist_data(dataset_name):
     train_io = list(zip(process_mnist_input(x_train), process_mnist_output(y_train)))
     test_io = list(zip(process_mnist_input(x_test), process_mnist_output(y_test)))
 
-    training_title = 'data/' + dataset_name + '_training'
-    testing_title = 'data/' + dataset_name + '_testing'
+    training_title = 'data/' + dataset_name + '_training' + '.pickle'
+    testing_title = 'data/' + dataset_name + '_testing' + '.pickle'
 
     pickle.dump(train_io, open(training_title, 'wb'))
     pickle.dump(test_io, open(testing_title, 'wb'))
-
-    return train_io, test_io
 
 
 def read_mnist_data(dataset_name):
@@ -321,3 +318,9 @@ def shift_list(values, delta, fill_extra_with=None):
         if fill_extra_with is not None:
             for i in range(delta - 1, -1, -1):
                 values[i] = copy.copy(fill_extra_with)
+
+
+# Temporary Data Processing
+if __name__ == "__main__":
+    write_mnist_data('mnist_digits')
+    write_mnist_data('mnist_fashion')
