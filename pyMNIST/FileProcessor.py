@@ -118,7 +118,7 @@ def augment_mnist_digits_data(num_augments, width, height):
             new_outputs.append(o)
             inputs_completed += 1.0
             ProgressBar.draw_bar(inputs_completed / len(io_list * num_augments), 30, time.time() - start_time)
-            for n in range(num_augments-1):  # TODO bugfix data augmentation
+            for n in range(num_augments-1):
                 x_range, y_range = calculate_shift_ranges(i, width, height)
                 rnd_x = random.randint(x_range[0], x_range[1])
                 rnd_y = random.randint(y_range[0], y_range[1])
@@ -384,8 +384,8 @@ def shift_list(values, delta, fill_extra_with=None):
 if __name__ == "__main__":
     # write_mnist_data('mnist_digits')
     # write_mnist_data('mnist_fashion')
-    augment_mnist_digits_data(num_augments=5, width=28, height=28)
-    augmented_train, augmented_test = read_mnist_data('mnist_digits')
+    # augment_mnist_digits_data(num_augments=5, width=28, height=28)
+    augmented_train, augmented_test = read_mnist_data('augmented_digits')
     for aug_input, aug_output in augmented_train[:5]:
         draw_input_to_ascii(aug_input, width=28, height=28)
         print(aug_output)
