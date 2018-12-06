@@ -217,7 +217,7 @@ if __name__ == "__main__":
     trials = 3
     epochs = 12000
     batch = 5
-    name = "mnist_digits"
+    name = "augmented_digits"
     trainer = NetworkTrainer(size, learning_rate=rate,
                              num_trials=trials, num_epochs=epochs, batch_size=batch, dataset_name=name)
     file_name_list, name_index = trainer.training(num_networks=5)
