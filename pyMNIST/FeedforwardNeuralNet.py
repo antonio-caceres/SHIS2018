@@ -163,26 +163,26 @@ class NetworkTrainer:
         for i in range(num_networks):
             start_time = time.time()
             print(f"Training Network {i}")
-            ProgressBar.draw_bar(0, 30, 0)
 
             net = NeuralNet(self.net_size, self.learning_rate)
             num_correct_list = []
             for trial_num in range(self.num_trials):
-                def update_progress_bar(epoch_index):
-                    epochs_completed = float(trial_num) * self.num_epochs + float(epoch_index)
-                    epochs_total = self.num_epochs * self.num_trials
-                    ProgressBar.draw_bar(epochs_completed / epochs_total, 30, time.time() - start_time)
+                print(f"Trial {trial_num}: ", end='')
 
+                def update_progress_bar(epoch_index):
+                    ProgressBar.draw_bar(float(epoch_index) / self.num_epochs, 30, time.time() - start_time)
+                    print(f"Trial {trial_num}: ", end='')
+
+                ProgressBar.draw_bar(0, 30, 0)
                 net.stochastic_training_input(self.train_inputs_outputs, self.num_epochs, self.batch_size,
                                               update_progress_bar)
-                num_correct_list.append(self.testing(net))
+                correct_images = self.testing(net)
+                print(f"{correct_images} Correct Images", " " * 10)
+                num_correct_list.append(correct_images)
             print("Network training took " + ProgressBar.time_to_string(time.time() - start_time) + ".")
 
             file_name = FileProcessor.write_net_file(net, self.name, path)
             file_names.append(file_name)
-
-            for j in range(len(num_correct_list)):
-                print(f"Trial {j}: {num_correct_list[j]} correct testing images.")
             num_correct_lists.append(num_correct_list)
         index = FileProcessor.write_meta_net_file(self.net_size, self.learning_rate, self.name,
                                                   self.num_trials, self.num_epochs, self.batch_size, num_correct_lists)
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     size = [28*28, 26*26, 7*7, 10]
     rate = .3
     trials = 3
-    epochs = 120000
+    epochs = 12
     batch = 10
     name = "augmented_digits"
     trainer = NetworkTrainer(size, learning_rate=rate,
