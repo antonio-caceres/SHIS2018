@@ -343,16 +343,14 @@ def shift_all_values(input_values, width, height, xy_delta):
     """
     # create a 2D array version of the 1D array
     two_dim_copy = []
-    new_input_list = np.array([[0]] * width * height)
+    new_input_list = np.array([[0.0]] * width * height)
     for r in range(height):
         two_dim_copy.append([])
         for c in range(width):
             two_dim_copy[r].append(input_values[r * width + c][0])
-
     for r in range(len(two_dim_copy)):
         shift_list(two_dim_copy[r], xy_delta[0], 0)
     shift_list(two_dim_copy, xy_delta[1], [0] * width)
-
     # copy it back now
     for r in range(height):
         for c in range(width):
@@ -388,6 +386,6 @@ if __name__ == "__main__":
     # write_mnist_data('mnist_fashion')
     augment_mnist_digits_data(num_augments=5, width=28, height=28)
     augmented_train, augmented_test = read_mnist_data('mnist_digits')
-    for i, o in augmented_train[:5]:
-        draw_input_to_ascii(i, width=28, height=28)
-        print(o)
+    for aug_input, aug_output in augmented_train[:5]:
+        draw_input_to_ascii(aug_input, width=28, height=28)
+        print(aug_output)
