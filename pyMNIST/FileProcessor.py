@@ -1,7 +1,8 @@
 import os
-import imageio
 import time
+import random
 import pickle
+import imageio
 import numpy as np
 from utils import mnist_reader
 import FeedforwardNeuralNet
@@ -90,6 +91,57 @@ def read_mnist_data(dataset_name):
     return train_io, test_io
 
 
+def augment_mnist_digits_data(num_augments, width, height):
+    """
+    Takes the mnist digits dataset and augments it, multiplying its size by num_augments.
+    Writes the new dataset to a pickle file. Requires the mnist digits data to already be written.
+    :param num_augments: the number of new inputs to create from one base input in the mnist dataset.
+    :param width: the width of the image in the input
+    :param height: the height of the image in the input
+    """
+    start_time = time.time()
+    print("Augmenting Digit Training Data")
+    ProgressBar.draw_bar(0, 30, 0)
+
+    def augment_inputs(io_list):
+        """
+        Takes a zipped list of inputs and their corresponding outputs
+        :param io_list: list of tuples, each with one input and its corresponding output
+        :return: a zipped list of augmented inputs and their corresponding outputs
+        """
+        inputs_completed = 0
+        new_inputs = []
+        new_outputs = []
+        for i, o in io_list:
+            # doing the original input and output
+            new_inputs.append(i)
+            new_outputs.append(o)
+            inputs_completed += 1.0
+            ProgressBar.draw_bar(inputs_completed / len(io_list * num_augments), 30, time.time() - start_time)
+            for n in range(num_augments-1):  # TODO bugfix data augmentation
+                x_range, y_range = calculate_shift_ranges(i, width, height)
+                rnd_x = random.randint(x_range[0], x_range[1])
+                rnd_y = random.randint(y_range[0], y_range[1])
+                shift_delta = (rnd_x, rnd_y)
+                new_input = shift_all_values(i, width, height, shift_delta)
+                new_inputs.append(new_input)
+                new_outputs.append(o)
+                inputs_completed += 1.0
+                ProgressBar.draw_bar(inputs_completed / len(io_list*num_augments), 30, time.time() - start_time)
+        return list(zip(new_inputs, new_outputs))
+    old_training, old_testing = read_mnist_data('mnist_digits')
+
+    augmented_train_io = augment_inputs(old_training)
+    augmented_test_io = augment_inputs(old_testing)
+    print("Data augmenting took " + ProgressBar.time_to_string(time.time() - start_time) + ".")
+
+    training_title = 'data/' + 'augmented_digits' + '_training' + '.pickle'
+    testing_title = 'data/' + 'augmented_digits' + '_testing' + '.pickle'
+
+    pickle.dump(augmented_train_io, open(training_title, 'wb'))
+    pickle.dump(augmented_test_io, open(testing_title, 'wb'))
+
+
 # This method is probably never going to be used but I'm going to leave it here.
 def user_drawings_to_inputs(path, base_title):
     """
@@ -111,19 +163,21 @@ def user_drawings_to_inputs(path, base_title):
             for element in row:
                 new_input.append([(255 - element) / 256])
         processed_input_list.append(np.array(new_input))
-    return zip(processed_input_list, file_names)
+    return list(zip(processed_input_list, file_names))
 
 
-def draw_input_to_ascii(input_list):
+def draw_input_to_ascii(input_list, width, height):
     """
     Prints an input to the network in ASCII characters.
     :param input_list: a list of floats between 0 and 1, representing an input to the neural network.
+    :param width: the width of the image to be drawn
+    :param height: the height of the image to be drawn
     """
     i = 0
-    for r in range(28):
-        for c in range(28):
+    for r in range(height):
+        for c in range(width):
             char = '.'
-            if input_list[r * 28 + c][0] != 0:
+            if input_list[r * width + c][0] != 0:
                 char = '#'
             print(char, end='')
             i += 1
@@ -195,9 +249,6 @@ def read_net_file(net_size, net_rate, file_name):
     return net
 
 
-# TODO Data Augmentation Pickle Files
-
-
 # Miscellaneous
 def get_complete_title(base, path, file_type):
     """
@@ -222,16 +273,18 @@ def get_complete_title(base, path, file_type):
 
 
 # Data Augmentation
-def bound_box_of_values(input_list):
+def bound_box_of_values(input_list, width, height):
     """
-    :param input_list: a one-dimensional numpy column array containing values for a handwritten digit.
     Calculates the box of values surrounding the image in question.
+    :param input_list: a one-dimensional numpy column array containing values for a handwritten digit.
+    :param width: the width of the image
+    :param height: the height of the image
     :return: ((min_x, min_y), (max_x, max_y))
     """
-    minimum, maximum = [28, 28], [-1, -1]
-    for r in range(28):
-        for c in range(28):
-            v = input_list[r * 28 + c][0]
+    minimum, maximum = [width, height], [-1, -1]
+    for r in range(height):
+        for c in range(width):
+            v = input_list[r * width + c][0]
             if v != 0:
                 if c < minimum[0]:
                     minimum[0] = c
@@ -244,58 +297,66 @@ def bound_box_of_values(input_list):
     return (minimum[0], minimum[1]), (maximum[0], maximum[1])
 
 
-def calculate_shift_ranges(input_list):
+def calculate_shift_ranges(input_list, width, height):
     """
-    :param input_list: a one-dimensional numpy column array containing values for a handwritten digit.
     Calculates the maximum range by which to shift the image to reach the boundary
+    :param input_list: a one-dimensional numpy column array containing values for a handwritten digit.
+    :param width: the width of the image
+    :param height: the height of the image
     :return: ((max_left, max_right),(max_up, max_down))
     """
-    bounds = bound_box_of_values(input_list)
-    x_range = (-bounds[0][0], 28 - bounds[1][0] - 1)
-    y_range = (-bounds[0][1], 28 - bounds[1][1] - 1)
+    bounds = bound_box_of_values(input_list, width, height)
+    x_range = (-bounds[0][0], width - bounds[1][0] - 1)
+    y_range = (-bounds[0][1], height - bounds[1][1] - 1)
     return x_range, y_range
 
 
-def range_of_shiftable_positions(input_list):
+def range_of_shiftable_positions(input_list, width, height):
     """
     :param input_list: a one-dimensional numpy column array containing values for a handwritten digit.
+    :param width: the width of the image
+    :param height: the height of the image
     :return: a sequence of shift deltas to get every possible position of the input list within the bounds of the image.
         Note that the sequence assumes that the image is moving.
     """
-    bounds = bound_box_of_values(input_list)
+    bounds = bound_box_of_values(input_list, width, height)
     result = []
     dx, dy = bounds[1][0] - bounds[0][0], bounds[1][1] - bounds[0][1]
     result.append((-bounds[0][0], -bounds[0][1]))
-    for r in range(28 - dy):
+    for r in range(height - dy):
         if dx > 0:
-            for c in range(28 - dx - 1):
+            for c in range(width - dx - 1):
                 result.append((+1, 0))
-        if r < 28 - dy - 1:
-            result.append((-(28 - dx - 1), +1))
+        if r < height - dy - 1:
+            result.append((-(width - dx - 1), +1))
     return result
 
 
-def shift_all_values(input_values, xy_delta):
+def shift_all_values(input_values, width, height, xy_delta):
     """
     return a new list of inputs that is the original inputs shifted by the delta.
     :param input_values: a one-dimensional numpy column array containing values for a handwritten digit.
     :param xy_delta: a shift delta that produces a new position for the image in the input_values
-    :return:
+    :param width: the width of the image
+    :param height: the height of the image
+    :return: a list of new inputs that contain a shifted image.
     """
     # create a 2D array version of the 1D array
     two_dim_copy = []
-    new_input_list = []
-    for r in range(28):
+    new_input_list = np.array([[0]] * width * height)
+    for r in range(height):
         two_dim_copy.append([])
-        for c in range(28):
-            two_dim_copy[r].append(input_values[r * 28 + c][0])
+        for c in range(width):
+            two_dim_copy[r].append(input_values[r * width + c][0])
+
     for r in range(len(two_dim_copy)):
         shift_list(two_dim_copy[r], xy_delta[0], 0)
-    shift_list(two_dim_copy, xy_delta[1], [0] * len(two_dim_copy[0]))
+    shift_list(two_dim_copy, xy_delta[1], [0] * width)
+
     # copy it back now
-    for r in range(28):
-        for c in range(28):
-            new_input_list[r * 28 + c][0] = two_dim_copy[r][c]
+    for r in range(height):
+        for c in range(width):
+            new_input_list[r * width + c][0] = two_dim_copy[r][c]
     return new_input_list
 
 
@@ -323,5 +384,10 @@ def shift_list(values, delta, fill_extra_with=None):
 
 
 if __name__ == "__main__":
-    write_mnist_data('mnist_digits')
-    write_mnist_data('mnist_fashion')
+    # write_mnist_data('mnist_digits')
+    # write_mnist_data('mnist_fashion')
+    augment_mnist_digits_data(num_augments=5, width=28, height=28)
+    augmented_train, augmented_test = read_mnist_data('mnist_digits')
+    for i, o in augmented_train[:5]:
+        draw_input_to_ascii(i, width=28, height=28)
+        print(o)

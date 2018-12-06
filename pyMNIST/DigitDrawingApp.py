@@ -117,7 +117,7 @@ def process_keyboard_input(user_event):
 
     # Deals with the 'w', 'a', 's', 'd', and 'r' inputs.
     elif 32 <= user_event.key < 128 and chr(user_event.key) in "wasdr":
-        x_range, y_range = FileProcessor.calculate_shift_ranges(values)
+        x_range, y_range = FileProcessor.calculate_shift_ranges(values, WIDTH, HEIGHT)
         shift_delta = (0, 0)
         if user_event.key == ord('w') and (shift_is_pressed or y_range[0] < 0):
             shift_delta = (0, -1)
@@ -132,7 +132,7 @@ def process_keyboard_input(user_event):
             rnd_y = random.randint(y_range[0], y_range[1])
             shift_delta = (rnd_x, rnd_y)
         if shift_delta != (0, 0):
-            values = FileProcessor.shift_all_values(values, shift_delta)
+            values = FileProcessor.shift_all_values(values, WIDTH, HEIGHT, shift_delta)
 
 
 # Adjusting the Drawing and the Values
@@ -239,6 +239,8 @@ def get_random_color():
 
 
 if __name__ == "__main__":
+    test = False
+
     pygame.init()
     window_surface = pygame.display.set_mode((500, 400), 0, 24)
     pygame.display.set_caption("SHIS Digit Drawing")
@@ -265,36 +267,37 @@ if __name__ == "__main__":
             raster_must_redraw = False
     pygame.quit()
 
-    brush_to_values_raster([
-        "                            ",
-        "      ######                ",
-        "     ########               ",
-        "    ###   ####              ",
-        "   ##       ###             ",
-        "   #         ###            ",
-        " ##           ##            ",
-        "              ##            ",
-        "              #             ",
-        "              #             ",
-        "              #             ",
-        "             #              ",
-        "            #               ",
-        "           #                ",
-        "          #                 ",
-        "         #                  ",
-        "         #                  ",
-        "        ##                  ",
-        "        ##                  ",
-        "       ###                  ",
-        "       ##                   ",
-        "      ####              #   ",
-        "      #####             ##  ",
-        "     ###############   ###  ",
-        "     ####################   ",
-        "                  ######    ",
-        "                            "], 0.1)
-    positions = FileProcessor.range_of_shiftable_positions(values)
-    for delta in positions:
-        print(delta)
-        FileProcessor.shift_all_values(values, delta)
-        FileProcessor.draw_input_to_ascii(values)
+    if test:
+        brush_to_values_raster([
+            "                            ",
+            "      ######                ",
+            "     ########               ",
+            "    ###   ####              ",
+            "   ##       ###             ",
+            "   #         ###            ",
+            " ##           ##            ",
+            "              ##            ",
+            "              #             ",
+            "              #             ",
+            "              #             ",
+            "             #              ",
+            "            #               ",
+            "           #                ",
+            "          #                 ",
+            "         #                  ",
+            "         #                  ",
+            "        ##                  ",
+            "        ##                  ",
+            "       ###                  ",
+            "       ##                   ",
+            "      ####              #   ",
+            "      #####             ##  ",
+            "     ###############   ###  ",
+            "     ####################   ",
+            "                  ######    ",
+            "                            "], 0.1)
+        positions = FileProcessor.range_of_shiftable_positions(values, WIDTH, HEIGHT)
+        for delta in positions:
+            print(delta)
+            FileProcessor.shift_all_values(values, WIDTH, HEIGHT, delta)
+            FileProcessor.draw_input_to_ascii(values, WIDTH, HEIGHT)
