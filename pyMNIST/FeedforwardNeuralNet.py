@@ -215,7 +215,7 @@ if __name__ == "__main__":
     size = [28*28, 26*26, 7*7, 10]
     rate = .3
     trials = 3
-    epochs = 60000
+    epochs = 120000
     batch = 10
     name = "augmented_digits"
     trainer = NetworkTrainer(size, learning_rate=rate,
