@@ -230,7 +230,7 @@ def write_net_file(net, dataset_name, folder_name):
     """
     file_name = get_complete_title(dataset_name + ' Net', folder_name, '.pickle')
     information = (net.weight_matrices, net.bias_matrices)
-    pickle.dump(information, file_name)
+    pickle.dump(information, open(file_name, 'wb'))
     return file_name
 
 
@@ -243,7 +243,7 @@ def read_net_file(net_size, net_rate, file_name):
     :return: a neural net with weights and biases from the file.
     """
     net = FeedforwardNeuralNet.NeuralNet(net_size, net_rate)
-    new_weights, new_biases = pickle.load(file_name)
+    new_weights, new_biases = pickle.load(open(file_name, 'rb'))
     net.weight_matrices = new_weights
     net.bias_matrices = new_biases
     return net

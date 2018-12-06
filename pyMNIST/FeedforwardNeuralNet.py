@@ -157,7 +157,7 @@ class NetworkTrainer:
         """
         num_correct_lists = []
         file_names = []
-        path = 'weight_database/' + FileProcessor.get_complete_title(self.name + " Training", 'weight_database', '')
+        path = FileProcessor.get_complete_title(self.name + " Training", 'weight_database', '')
         os.mkdir(path)
 
         for i in range(num_networks):
