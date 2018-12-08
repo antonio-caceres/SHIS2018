@@ -1,11 +1,6 @@
 # SHIS Syllabus
 ### Major Assigments
 **Python MNIST Digit Recognition**
-* Process the digit data set to randomize the location of the actual handwriting within the 28x28 input, ensuring the net can recognize handwriting that isn't in the center of the input.
-  * Add input read/write to files to the FileProcessor.
-  * Process the MNIST dataset into a different format to read it from there.
-  * Change the MNIST dataset, adding different translations of the images.
-* Train a multilayer feedforward network with the school computers, storing the sets of weights after training.
 * Add realtime neural net processing and 'brain confidence' to the Pygame drawing app for the demonstration.
 * Test an 'imagination function' of the *trained* neural net using the generalized inverse by:
   * Applying a function to the 'backwards outputs' of each layer to restrict the values to the intended range.
