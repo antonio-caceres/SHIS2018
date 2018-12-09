@@ -8,6 +8,56 @@ from utils import mnist_reader
 import FeedforwardNeuralNet
 import ProgressBar
 
+def deep_getsizeof(o, ids = None, progress_callback = None):
+    """Find the memory footprint of a Python object
+
+    This is a recursive function that drills down a Python object graph
+    like a dictionary holding nested dictionaries with lists of lists
+    and tuples and sets.
+
+    The sys.getsizeof function does a shallow size of only. It counts each
+    object inside a container as pointer only regardless of how big it
+    really is.
+    https://code.tutsplus.com/tutorials/understand-how-much-memory-your-python-objects-use--cms-25609
+
+    :param o: the object
+    :param ids:
+    :return:
+    """
+    try:
+        import collections.abc as collections_abc # only works on python 3.3+
+    except ImportError:
+        import collections as collections_abc
+    import sys
+    if ids == None: ids = set()
+    d = deep_getsizeof
+    if id(o) in ids: return 0
+    r = sys.getsizeof(o)
+    ids.add(id(o))
+    if isinstance(o, str): return r
+    if isinstance(o, collections_abc.Mapping):
+        total = 0
+        count = len(o.iteritems())
+        iter = 0
+        for k, v in o.iteritems():
+            total += d(k, ids) + d(v, ids)
+            if progress_callback != None:
+                iter += 1.0
+                progress_callback(iter/count)
+        return r + total
+        # return r + sum(d(k, ids) + d(v, ids) for k, v in o.iteritems()) # this single line does what the above lines do, but without calling progress_callback
+    if isinstance(o, collections_abc.Container):
+        total = 0
+        count = len(o)
+        iter = 0
+        for x in o:
+            total += d(x, ids)
+            if progress_callback != None:
+                iter += 1.0
+                progress_callback(iter/count)
+        return r + total
+        #return r + sum(d(x, ids) for x in o)
+    return r
 
 # Data Processing
 def write_mnist_data(dataset_name):
@@ -77,7 +127,13 @@ def write_mnist_data(dataset_name):
     training_title = 'data/' + dataset_name + '_training' + '.pickle'
     testing_title = 'data/' + dataset_name + '_testing' + '.pickle'
 
+    def calcMemcostProgress(progress):
+        ProgressBar.draw_bar(progress, 30, filled_and_unfilled=("CALCULATING#MEMORY#COST#","calculating memory cost "))
+    memcost = deep_getsizeof(train_io, progress_callback=calcMemcostProgress)
+    print("pickling %d bytes..." % memcost)
     pickle.dump(train_io, open(training_title, 'wb'))
+    memcost = deep_getsizeof(test_io, progress_callback=calcMemcostProgress)
+    print("pickling %d bytes..." % memcost)
     pickle.dump(test_io, open(testing_title, 'wb'))
 
 
