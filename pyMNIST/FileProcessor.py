@@ -8,7 +8,8 @@ from utils import mnist_reader
 import FeedforwardNeuralNet
 import ProgressBar
 
-def deep_getsizeof(o, ids = None, progress_callback = None):
+
+def deep_get_size_of(o, ids=None, progress_callback=None):
     """Find the memory footprint of a Python object
 
     This is a recursive function that drills down a Python object graph
@@ -22,42 +23,48 @@ def deep_getsizeof(o, ids = None, progress_callback = None):
 
     :param o: the object
     :param ids:
+    :param progress_callback
     :return:
     """
     try:
-        import collections.abc as collections_abc # only works on python 3.3+
+        import collections.abc as collections_abc  # only works on python 3.3+
     except ImportError:
         import collections as collections_abc
     import sys
-    if ids == None: ids = set()
-    d = deep_getsizeof
-    if id(o) in ids: return 0
+    if ids is None:
+        ids = set()
+    d = deep_get_size_of
+    if id(o) in ids:
+        return 0
     r = sys.getsizeof(o)
     ids.add(id(o))
-    if isinstance(o, str): return r
+    if isinstance(o, str):
+        return r
     if isinstance(o, collections_abc.Mapping):
         total = 0
         count = len(o.iteritems())
-        iter = 0
+        iterator = 0
         for k, v in o.iteritems():
             total += d(k, ids) + d(v, ids)
-            if progress_callback != None:
-                iter += 1.0
-                progress_callback(iter/count)
+            if progress_callback is not None:
+                iterator += 1.0
+                progress_callback(iterator/count)
         return r + total
-        # return r + sum(d(k, ids) + d(v, ids) for k, v in o.iteritems()) # this single line does what the above lines do, but without calling progress_callback
+        # return r + sum(d(k, ids) + d(v, ids) for k, v in o.iteritems())
+        # this single line does what the above lines do, but without calling progress_callback
     if isinstance(o, collections_abc.Container):
         total = 0
         count = len(o)
-        iter = 0
+        iterator = 0
         for x in o:
             total += d(x, ids)
-            if progress_callback != None:
-                iter += 1.0
-                progress_callback(iter/count)
+            if progress_callback is not None:
+                iterator += 1.0
+                progress_callback(iterator/count)
         return r + total
-        #return r + sum(d(x, ids) for x in o)
+        # return r + sum(d(x, ids) for x in o)
     return r
+
 
 # Data Processing
 def write_mnist_data(dataset_name):
@@ -127,13 +134,13 @@ def write_mnist_data(dataset_name):
     training_title = 'data/' + dataset_name + '_training' + '.pickle'
     testing_title = 'data/' + dataset_name + '_testing' + '.pickle'
 
-    def calcMemcostProgress(progress):
-        ProgressBar.draw_bar(progress, 30, filled_and_unfilled=("CALCULATING#MEMORY#COST#","calculating memory cost "))
-    memcost = deep_getsizeof(train_io, progress_callback=calcMemcostProgress)
-    print("pickling %d bytes..." % memcost)
+    def calc_mem_cost_progress(progress):
+        ProgressBar.draw_bar(progress, 30, filled_and_unfilled=("CALCULATING#MEMORY#COST#", "calculating memory cost "))
+    mem_cost = deep_get_size_of(train_io, progress_callback=calc_mem_cost_progress)
+    print("pickling %d bytes..." % mem_cost)
     pickle.dump(train_io, open(training_title, 'wb'))
-    memcost = deep_getsizeof(test_io, progress_callback=calcMemcostProgress)
-    print("pickling %d bytes..." % memcost)
+    mem_cost = deep_get_size_of(test_io, progress_callback=calc_mem_cost_progress)
+    print("pickling %d bytes..." % mem_cost)
     pickle.dump(test_io, open(testing_title, 'wb'))
 
 
@@ -290,12 +297,12 @@ def write_net_file(net, dataset_name, folder_name):
     return file_name
 
 
-def read_net_file(net_size, net_rate, file_name):
+def read_net_file(file_name, net_size, net_rate=0.1):
     """
     Creates a NeuralNet object with preloaded weights and biases from a file.
+    :param file_name: the path and file name to be used to preload the weights and biases
     :param net_size: the size of the neural network to be created
     :param net_rate: the rate of the neural network to be created
-    :param file_name: the path and file name to be used to preload the weights and biases
     :return: a neural net with weights and biases from the file.
     """
     net = FeedforwardNeuralNet.NeuralNet(net_size, net_rate)
@@ -437,11 +444,14 @@ def shift_list(values, delta, fill_extra_with=None):
                 values[i] = copy.copy(fill_extra_with)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # Testing Data IO goes here.
     # write_mnist_data('mnist_digits')
     # write_mnist_data('mnist_fashion')
     # augment_mnist_digits_data(num_augments=5, width=28, height=28)
-    augmented_train, augmented_test = read_mnist_data('augmented_digits')
-    for aug_input, aug_output in augmented_train[:5]:
-        draw_input_to_ascii(aug_input, width=28, height=28)
-        print(aug_output)
+    # augmented_train, augmented_test = read_mnist_data('augmented_digits')
+    neural_net = read_net_file('weight_database/augmented_digits Net 1.pickle', [28*28, 26*26, 7*7, 10])
+    inputs_names = user_drawings_to_inputs('bitmap_images', 'Image')
+    for drawing_input, name in inputs_names:
+        print(name)
+        draw_input_to_ascii(drawing_input, width=28, height=28)
+        print(neural_net.process_input(drawing_input)[-1])
