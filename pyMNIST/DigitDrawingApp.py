@@ -15,7 +15,7 @@ import FileProcessor
 WIDTH, HEIGHT = 28, 28  # dimensions for the drawing space in pixels
 X_SIZE, Y_SIZE = 10, 10  # used for raster position
 X_OFFSET, Y_OFFSET = 20, 20  # used for raster position
-MAX_VALUES = 30  # determines how 'quickly' the brush paints black
+MAX_VALUES = 20  # determines how 'quickly' the brush paints black
 BRUSH = [" XX ",
          "XXXX",
          " XX "]
@@ -105,13 +105,34 @@ def get_raster_position(mouse):
     return x_raster_pos, y_raster_pos
 
 
+def average_augmented_inputs(neural_net, num_augments):
+    """
+    Augments the current drawing a certain number of times and
+    averages the confidence in each of the digits to get a final result.
+    :param neural_net: the neural network used to process the inputs
+    :param num_augments: the number of times to randomly change the inputs
+    :return: the column array of outputs after they have been averaged.
+    """
+    avg_output = []
+    augmented_results = []
+    for i in range(num_augments):
+        augmented = FileProcessor.augment_input(values, WIDTH, HEIGHT)
+        augmented_results.append(neural_net.process_input(augmented)[-1])
+    for digit in range(len(augmented_results[0])):
+        digit_total = 0.0
+        for aug_output in augmented_results:
+            digit_total += aug_output[digit][0]
+        avg_output.append([digit_total/num_augments])
+    return np.array(avg_output)
+
+
 def process_keyboard_input(user_event, neural_net):
     global values, raster_must_redraw, shift_is_pressed
     raster_must_redraw = True
     # Save the currently drawn image on space or return.
     if user_event.key == 13 or user_event.key == 32:
         save_bitmap_image()
-        output = neural_net.process_input(values)[-1]
+        output = average_augmented_inputs(neural_net, 5)
         os.system('cls||clear')  # to clear the terminal
         print("Percent Confidence for Each Digit")
         for n in range(len(output)):
