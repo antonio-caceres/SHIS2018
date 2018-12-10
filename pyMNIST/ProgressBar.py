@@ -144,7 +144,7 @@ def print_finished(process_name, width=None, seconds=None):
     return seconds
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # Progress bar testing
     if not __has_colorama:
         print("consider installing colorama with: python -m pip install colorama --user")
     # an example of how to make a progress bar

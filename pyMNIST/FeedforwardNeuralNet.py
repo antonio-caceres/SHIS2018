@@ -211,7 +211,7 @@ class NetworkTrainer:
         return correct_counter
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # writes trained neural networks
     size = [28*28, 26*26, 7*7, 10]
     rate = .3
     trials = 3

@@ -4,6 +4,7 @@ Much of the code used in this project is from https://inventwithpython.com/pygam
 Install pygame using the Terminal with: sudo pip install pygame
 Install pip using the Terminal with: curl https://bootstrap.pypa.io/get-pip.py > get-pip.py
 """
+import os
 import random
 import numpy as np
 import pygame
@@ -64,16 +65,17 @@ def clamp_values():
 
 
 # Handling User Inputs
-def process_input(user_event):
+def process_input(user_event, neural_net):
     """
     Processes a user input from pygame.
     :param user_event: pygame event
+    :param neural_net: the network used to process the drawn images
     """
     global clicking, raster_must_redraw, shift_is_pressed, app_is_running
     if user_event.type == QUIT:
         app_is_running = False
     elif user_event.type == KEYDOWN:
-        process_keyboard_input(user_event)
+        process_keyboard_input(user_event, neural_net)
     elif user_event.type == KEYUP:
         if user_event.key == 304:
             shift_is_pressed = False
@@ -103,12 +105,18 @@ def get_raster_position(mouse):
     return x_raster_pos, y_raster_pos
 
 
-def process_keyboard_input(user_event):
+def process_keyboard_input(user_event, neural_net):
     global values, raster_must_redraw, shift_is_pressed
     raster_must_redraw = True
     # Save the currently drawn image on space or return.
     if user_event.key == 13 or user_event.key == 32:
         save_bitmap_image()
+        output = neural_net.process_input(values)[-1]
+        os.system('cls||clear')  # to clear the terminal
+        print("Percent Confidence for Each Digit")
+        for n in range(len(output)):
+            percent = float(int(output[n][0] * 10000)) / 100.0
+            print(f"{n}: {percent}%")
     # Reset the drawing space on escape or backspace.
     elif user_event.key == 27 or user_event.key == 8:
         values = np.array([[0.0]] * WIDTH * HEIGHT)
@@ -239,7 +247,8 @@ def get_random_color():
 
 
 if __name__ == "__main__":
-    test = False
+    size = [28*28, 26*26, 7*7, 10]
+    net = FileProcessor.read_net_file('weight_database/weights.pickle', size)
 
     pygame.init()
     window_surface = pygame.display.set_mode((500, 400), 0, 24)
@@ -260,44 +269,9 @@ if __name__ == "__main__":
     app_is_running = True
     while app_is_running:
         for event in pygame.event.get():
-            process_input(event)
+            process_input(event, net)
         if raster_must_redraw:
             draw_raster(window_surface)
             pygame.display.update()
             raster_must_redraw = False
     pygame.quit()
-
-    if test:
-        brush_to_values_raster([
-            "                            ",
-            "      ######                ",
-            "     ########               ",
-            "    ###   ####              ",
-            "   ##       ###             ",
-            "   #         ###            ",
-            " ##           ##            ",
-            "              ##            ",
-            "              #             ",
-            "              #             ",
-            "              #             ",
-            "             #              ",
-            "            #               ",
-            "           #                ",
-            "          #                 ",
-            "         #                  ",
-            "         #                  ",
-            "        ##                  ",
-            "        ##                  ",
-            "       ###                  ",
-            "       ##                   ",
-            "      ####              #   ",
-            "      #####             ##  ",
-            "     ###############   ###  ",
-            "     ####################   ",
-            "                  ######    ",
-            "                            "], 0.1)
-        positions = FileProcessor.range_of_shiftable_positions(values, WIDTH, HEIGHT)
-        for delta in positions:
-            print(delta)
-            FileProcessor.shift_all_values(values, WIDTH, HEIGHT, delta)
-            FileProcessor.draw_input_to_ascii(values, WIDTH, HEIGHT)

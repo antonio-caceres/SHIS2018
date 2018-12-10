@@ -166,7 +166,7 @@ def augment_mnist_digits_data(num_augments, width, height):
     print("Augmenting Digit Training Data")
     ProgressBar.draw_bar(0, 30, 0)
 
-    def augment_inputs(io_list):
+    def augment_input_outputs(io_list):
         """
         Takes a zipped list of inputs and their corresponding outputs
         :param io_list: list of tuples, each with one input and its corresponding output
@@ -182,11 +182,7 @@ def augment_mnist_digits_data(num_augments, width, height):
             inputs_completed += 1.0
             ProgressBar.draw_bar(inputs_completed / len(io_list * num_augments), 30, time.time() - start_time)
             for n in range(num_augments-1):
-                x_range, y_range = calculate_shift_ranges(i, width, height)
-                rnd_x = random.randint(x_range[0], x_range[1])
-                rnd_y = random.randint(y_range[0], y_range[1])
-                shift_delta = (rnd_x, rnd_y)
-                new_input = shift_all_values(i, width, height, shift_delta)
+                new_input = augment_input(i, width, height)
                 new_inputs.append(new_input)
                 new_outputs.append(o)
                 inputs_completed += 1.0
@@ -194,8 +190,8 @@ def augment_mnist_digits_data(num_augments, width, height):
         return list(zip(new_inputs, new_outputs))
     old_training, old_testing = read_mnist_data('mnist_digits')
 
-    augmented_train_io = augment_inputs(old_training)
-    augmented_test_io = augment_inputs(old_testing)
+    augmented_train_io = augment_input_outputs(old_training)
+    augmented_test_io = augment_input_outputs(old_testing)
     print("Data augmenting took " + ProgressBar.time_to_string(time.time() - start_time) + ".")
 
     training_title = 'data/' + 'augmented_digits' + '_training' + '.pickle'
@@ -203,6 +199,22 @@ def augment_mnist_digits_data(num_augments, width, height):
 
     pickle.dump(augmented_train_io, open(training_title, 'wb'))
     pickle.dump(augmented_test_io, open(testing_title, 'wb'))
+
+
+def augment_input(net_input, width, height):
+    """
+    Changes the position of the neural network.
+    :param net_input: a input to the neural network
+    :param width: the width of the image in the input
+    :param height: the height of the image in the input
+    :return: the new input to the neural network
+    """
+    x_range, y_range = calculate_shift_ranges(net_input, width, height)
+    rnd_x = random.randint(x_range[0], x_range[1])
+    rnd_y = random.randint(y_range[0], y_range[1])
+    shift_delta = (rnd_x, rnd_y)
+    new_input = shift_all_values(net_input, width, height, shift_delta)
+    return new_input
 
 
 # This method is probably never going to be used but I'm going to leave it here.
@@ -444,14 +456,7 @@ def shift_list(values, delta, fill_extra_with=None):
                 values[i] = copy.copy(fill_extra_with)
 
 
-if __name__ == "__main__":  # Testing Data IO goes here.
-    # write_mnist_data('mnist_digits')
-    # write_mnist_data('mnist_fashion')
-    # augment_mnist_digits_data(num_augments=5, width=28, height=28)
-    # augmented_train, augmented_test = read_mnist_data('augmented_digits')
-    neural_net = read_net_file('weight_database/augmented_digits Net 1.pickle', [28*28, 26*26, 7*7, 10])
-    inputs_names = user_drawings_to_inputs('bitmap_images', 'Image')
-    for drawing_input, name in inputs_names:
-        print(name)
-        draw_input_to_ascii(drawing_input, width=28, height=28)
-        print(neural_net.process_input(drawing_input)[-1])
+if __name__ == "__main__":  # Run this main function when using this repo for the first time.
+    write_mnist_data('mnist_digits')
+    write_mnist_data('mnist_fashion')
+    augment_mnist_digits_data(num_augments=5, width=28, height=28)
