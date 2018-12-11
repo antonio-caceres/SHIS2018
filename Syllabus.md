@@ -1,10 +1,10 @@
 # SHIS Syllabus
 ### Major Assigments
 **Python MNIST Digit Recognition**
-* Add realtime neural net processing and 'brain confidence' to the Pygame drawing app for the demonstration.
 * Test an 'imagination function' of the *trained* neural net using the generalized inverse by:
   * Applying a function to the 'backwards outputs' of each layer to restrict the values to the intended range.
   * Restricting the values by just setting all negative values to 0 and all values greater than 1 to 1.
+* Look into other strategies for implementing an 'imagination function'.
 
 **Small Presentation**
 * Create a small, five-minute presentation to explain neural nets to beginners.
@@ -25,7 +25,8 @@
 * Adjust the Bambino code to include neural net training processes.
 
 **Bandit Feedback Project**
-* Reach out to Dr. Thorsten Joachims about his project comparing bandit feedback from the proposal of the project.
+* Read [Deep Learning with Logged Bandit Feedback](http://www.cs.cornell.edu/people/tj/publications/joachims_etal_18a.pdf).
+  * "The goal of the project would be to confirm the findings of this paper also on other datasets beyond CIFAR10."
 
 ### Research
 Neural Networks
