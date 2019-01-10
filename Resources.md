@@ -73,7 +73,10 @@ Downing, Keith L. [*Intelligence Emerging: Adaptivity and Search in Evolving Neu
 - Neural Network Sidelights
 
 [Example of Neural Network Backpropagation Imagination](https://youtu.be/uixGgMInc48?t=168)
-> This is a demonstration of a program that uses Gauss Sampling to have a feedforward/backprop neural network 'imagine' potential outputs. This is one potential follow-up on the Python MNIST project.
+> This is a demonstration of a program that uses Gauss Sampling to have a feedforward/backprop neural network 'imagine' potential outputs. This is one potential follow-up on the Python MNIST project. The more common approach to this problem is a Generative Adversarial Network. The article directly below provides an introduction to GANs.
+
+[A Beginner's Guide to Generative Adversarial Networks (GANs)](https://skymind.ai/wiki/generative-adversarial-network-gan)
+> This article provides an introduction to Generative Adversarial Networks, which are designed to imagine potential inputs to the network. This might be an easier approach to that problem than Gauss Sampling.
 
 Schmidhuber, Jürgen. [“Deep Learning in Neural Networks: An Overview.”](arxiv.org/pdf/1404.7828v4.pdf) *Neural Networks*, edited by Kenji Doya and DeLiang Wang, vol. 61, Jan. 2015, pp. 85-117. arxiv.org/pdf/1404.7828v4.pdf.
 > The first four sections of this article (bolded) are an excellent overview of the more advanced concepts in neural networks once a student understands feedforward ANNs. The fifth section provides a history of neural networks which is mostly useless to an introductory computer science student.
