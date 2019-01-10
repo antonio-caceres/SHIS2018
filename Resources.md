@@ -30,7 +30,7 @@ Heaton, Jeff. [*Introduction to Neural Networks with Java.*](https://www.amazon.
 - Executing Examples
 
 ### First Project Resources
-Nielsen, Michael. [*Neural Networks and Deep Learning.*](http://neuralnetworksanddeeplearning.com/) Determination Press, 2015.
+Nielsen, Michael. [*Neural Networks and Deep Learning.*](http://neuralnetworksanddeeplearning.com/) Determination Press, 2015.  
 > This online book requires a small precursor to machine learning and a solid grasp of calculus, but is immeasurably helpful for learning the core of feedforward/backprop neural networks. If the programmer doesn't know calculus, the book can just be used to get the code that deals with the math (treat it like a black box).  
 - Using Neural Nets to Recognize Handwritten Digits
 - How the Backpropagation Algorithm Works
@@ -39,11 +39,11 @@ Nielsen, Michael. [*Neural Networks and Deep Learning.*](http://neuralnetworksan
 - Why are Deep Neural Networks Hard to Train?
 - Deep Learning
 
-[Neural Networks: A Visual Introduction](https://youtu.be/bVQUSndDllU?list=PLFt_AvWsXl0frsCrmv4fKfZ2OQIwoUuYO)
+[Neural Networks: A Visual Introduction](https://youtu.be/bVQUSndDllU?list=PLFt_AvWsXl0frsCrmv4fKfZ2OQIwoUuYO)  
 > This playlist of videos introduces the idea of a neural network in the context of plotting input data points and graphs and having the algorithm sort the inputs using an inequality equation. It also includes a tutorial for programming them using Python. It should be used after the student has been introduced to neural networks, but before the difficult mathematical theory.
 
 ### For Further Exploration
-Downing, Keith L. [*Intelligence Emerging: Adaptivity and Search in Evolving Neural Systems.*](https://mitpress.mit.edu/books/intelligence-emerging) MIT Press, May 2015.
+Downing, Keith L. [*Intelligence Emerging: Adaptivity and Search in Evolving Neural Systems.*](https://mitpress.mit.edu/books/intelligence-emerging) MIT Press, May 2015.  
 > This book is a full description of neural networks, different methods of training, and their relationships with neuroscience. It focuses much more heavily on the principles of intelligence, both biologically and artificially, rather than the actual construction of neural networks.
 - Introduction
 - Emergence
@@ -62,14 +62,14 @@ Downing, Keith L. [*Intelligence Emerging: Adaptivity and Search in Evolving Neu
 - Evolutionary Algorithm Sidelights
 - Neural Network Sidelights
 
-[Example of Neural Network Backpropagation Imagination](https://youtu.be/uixGgMInc48?t=168)
+[Example of Neural Network Backpropagation Imagination](https://youtu.be/uixGgMInc48?t=168)  
 > This is a demonstration of a program that uses Gauss Sampling to have a feedforward/backprop neural network 'imagine' potential outputs. This is one potential follow-up on the Python MNIST project. The more common approach to this problem is a Generative Adversarial Network. The article directly below provides an introduction to GANs.
 
-[A Beginner's Guide to Generative Adversarial Networks (GANs)](https://skymind.ai/wiki/generative-adversarial-network-gan)
+[A Beginner's Guide to Generative Adversarial Networks (GANs)](https://skymind.ai/wiki/generative-adversarial-network-gan)  
 `Generative Adversarial Networks` `Introductory`
 > This article provides an introduction to Generative Adversarial Networks, which are designed to imagine potential inputs to the network. This might be an easier approach to that problem than Gauss Sampling.
 
-Schmidhuber, Jürgen. [“Deep Learning in Neural Networks: An Overview.”](arxiv.org/pdf/1404.7828v4.pdf) *Neural Networks*, edited by Kenji Doya and DeLiang Wang, vol. 61, Jan. 2015, pp. 85-117. arxiv.org/pdf/1404.7828v4.pdf.
+Schmidhuber, Jürgen. [“Deep Learning in Neural Networks: An Overview.”](arxiv.org/pdf/1404.7828v4.pdf) *Neural Networks*, edited by Kenji Doya and DeLiang Wang, vol. 61, Jan. 2015, pp. 85-117. arxiv.org/pdf/1404.7828v4.pdf.  
 > The first four sections of this article (bolded) are an excellent overview of the more advanced concepts in neural networks once a student understands feedforward ANNs. The fifth section provides a history of neural networks which is mostly useless to an introductory computer science student.
 - Introduction to Deep Learning (DL) in Neural Networks (NNs)
 - Event-Oriented Notation for Activation Spreading in NNs
@@ -79,12 +79,12 @@ Schmidhuber, Jürgen. [“Deep Learning in Neural Networks: An Overview.”](arx
 - DL in FNNs and RNNs for Reinforcement Learning (RL)
 - Conclusion and Outlook
 
-Ripley, Brian D. [“Neural Networks and Related Methods for Classification.”] *Journal of the Royal Statistical Society Series B*, edited by D. Dunson and S. Wood, vol. 56, no. 3, 1994, pp. 409-456.
+Ripley, Brian D. [“Neural Networks and Related Methods for Classification.”] *Journal of the Royal Statistical Society Series B*, edited by D. Dunson and S. Wood, vol. 56, no. 3, 1994, pp. 409-456.  
 `Recurrent` `Symmetric Recurrent` `Comparison` `Supervised Learning`
 > This article introduces symmetric recurrent neural networks, and compares them to feedforward neural networks. Both types use supervised learning.
 
 ### For Math Enthusiasts
-Krose, Ben, and Patrick Smagt. [“An Introduction to Neural Networks.”](https://www.infor.uva.es/~teodoro/neuro-intro.pdf) 8th ed., U of Amsterdam, Nov. 1996.
+Krose, Ben, and Patrick Smagt. [“An Introduction to Neural Networks.”](https://www.infor.uva.es/~teodoro/neuro-intro.pdf) 8th ed., U of Amsterdam, Nov. 1996.  
 `Feedforward/Backprop` `Calculus` `Mathematical Theory`
 > This article is not necessary for any high school student to understand neural networks, but it can be helpful if the student likes the math a lot. Much of it is far too complex and mathematical for any high school student, but given time and effort somebody would be able to understand it.
 - Fundamentals
@@ -92,16 +92,17 @@ Krose, Ben, and Patrick Smagt. [“An Introduction to Neural Networks.”](https
 - Applications
 - Implementations
 
-Glorot, Xavier, and Yoshua Bengio. [“Understanding the Difficulty of Training Deep Feedforward Neural Networks.”](http://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf?hc_location=ufi) U of Montréal, 2010
+Glorot, Xavier, and Yoshua Bengio. [“Understanding the Difficulty of Training Deep Feedforward Neural Networks.”](http://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf?hc_location=ufi) U of Montréal, 2010.  
 `Feedforward/Backprop`
 > This article describes training deep feedforward neural networks using data. It studies gradients, backpropagation, and introduces a lot of complicated math to summarize the topic.
 
 ### Reinforcement Learning
 [A Beginner’s Guide to Deep Reinforcement Learning](https://skymind.ai/wiki/deep-reinforcement-learning)  
+`Reinforcement Learning` `Introductory`
 > This article describes the basics of a reinforcement learning neural network, drawing from the first edition of Reinforcement Learning: An Introduction.
 
-Sutton, Richard S., and Andrew G. Barto. [*Reinforcement Learning: An Introduction.*](https://www.amazon.com/Reinforcement-Learning-Introduction-Adaptive-Computation/dp/0262039249/ref=dp_ob_title_bk) Adaptive Computation and Machine Learning, edited by Francis Bach, 2nd ed., Bradford, 13 Nov. 2018.
-`Reinforcement Learning` `Monte Carlo` 
+Sutton, Richard S., and Andrew G. Barto. [*Reinforcement Learning: An Introduction.*](https://www.amazon.com/Reinforcement-Learning-Introduction-Adaptive-Computation/dp/0262039249/ref=dp_ob_title_bk) Adaptive Computation and Machine Learning, edited by Francis Bach, 2nd ed., Bradford, 13 Nov. 2018.  
+`Reinforcement Learning` `Monte Carlo`  
 > This book provides a complete overview of reinforcement learning, which is used when the correct decision in a certain situation isn't known, but the program can measure its performance with some sort of reward. The first three chapters (bolded) are essential for any reinforcement learning project, and can be supported by the second resource (directly below). Future chapters delve into more specific approaches to different reinforcement learning problems.
 - **Introduction**
 - **Multi-armed Bandits**
