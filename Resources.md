@@ -1,11 +1,11 @@
 # Resources  
 ### Introductory Resources  
 [Quick Introduction to Neural Networks](https://ujjwalkarn.me/2016/08/09/quick-intro-neural-networks/)  
-`introductory` `basic NN math` `sigmoid activation functions` `tanh activation function` `ReLU activation function` `feed forward` `perceptron` `back-propigation` `supervised learning` `links to other resources` 
+`introductory` `basic NN math` `sigmoid activation functions` `tanh activation function` `ReLU activation function` `feed forward` `perceptron` `back-propagation` `supervised learning` `links to other resources` 
 > This article describes the theory of a neural network quickly and simply. It should be used as one of the first introductory resources. It also includes references to more helpful resources.
 
 [How Deep Neural Networks Work](https://brohrer.github.io/how_neural_networks_work.html)  
-`introductory` `video` `perceptron` `image processing` `feed forward` `deep NN` `back-propigation` `sigmoid activation function` `ReLU activation function` `gradient descent` `basic NN math` `derivatives` `links to other resources` 
+`introductory` `video` `perceptron` `image processing` `feed forward` `deep NN` `back-propagation` `sigmoid activation function` `ReLU activation function` `gradient descent` `basic NN math` `derivatives` `links to other resources` 
 > This video describes the functions of a very simple neural network. It focuses on a mathematical walkthrough with a pattern of four black and white pixels. It gives the inputs, weights, biases, and functions values. It should be used in conjunction with other introductory resources; not the first introduction.
 
 Heaton, Jeff. [*Introduction to Neural Networks with Java.*](https://www.amazon.com/Introduction-Neural-Networks-Java-2nd/dp/1604390085) 2nd ed., Heaton Research, 1 Oct. 2008.  
@@ -41,7 +41,7 @@ Nielsen, Michael. [*Neural Networks and Deep Learning.*](http://neuralnetworksan
 
 [Neural Networks: A Visual Introduction](https://youtu.be/bVQUSndDllU?list=PLFt_AvWsXl0frsCrmv4fKfZ2OQIwoUuYO)  
 `video` `perceptron` `digit classification` `decision boundary` `basic NN math` `sigmoid activation function` `matrix multiplication` `matrix addition` `python` `practical implementation`
-> This playlist of videos introduces the idea of a neural network in the context of plotting input data points and graphs and having the algorithm sort the inputs using an inequality equation. It also includes a tutorial for programming them using Python. It should be used after the student has been introduced to neural networks, but before the difficult mathematical theory. As of January 2019, the video series ends before showing how to write back-propigation in Python.
+> This playlist of videos introduces the idea of a neural network in the context of plotting input data points and graphs and having the algorithm sort the inputs using an inequality equation. It also includes a tutorial for programming them using Python. It should be used after the student has been introduced to neural networks, but before the difficult mathematical theory. As of January 2019, the video series ends before showing how to write back-propagation in Python.
 
 ### For Further Exploration
 Downing, Keith L. [*Intelligence Emerging: Adaptivity and Search in Evolving Neural Systems.*](https://mitpress.mit.edu/books/intelligence-emerging) MIT Press, May 2015.  
