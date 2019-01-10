@@ -39,8 +39,9 @@ Nielsen, Michael. [*Neural Networks and Deep Learning.*](http://neuralnetworksan
 - Why are Deep Neural Networks Hard to Train?
 - Deep Learning
 
-[Neural Networks: A Visual Introduction](https://youtu.be/bVQUSndDllU?list=PLFt_AvWsXl0frsCrmv4fKfZ2OQIwoUuYO)  
-> This playlist of videos introduces the idea of a neural network in the context of plotting input data points and graphs and having the algorithm sort the inputs using an inequality equation. It also includes a tutorial for programming them using Python. It should be used after the student has been introduced to neural networks, but before the difficult mathematical theory.
+[Neural Networks: A Visual Introduction](https://youtu.be/bVQUSndDllU?list=PLFt_AvWsXl0frsCrmv4fKfZ2OQIwoUuYO)
+`video` `perceptron` `digit classification` `decision boundary` `basic NN math` `sigmoid activation function` `matrix multiplication` `matrix addition` `python` `practical implementation`
+> This playlist of videos introduces the idea of a neural network in the context of plotting input data points and graphs and having the algorithm sort the inputs using an inequality equation. It also includes a tutorial for programming them using Python. It should be used after the student has been introduced to neural networks, but before the difficult mathematical theory. As of January 2019, the video series ends before showing how to write back-propigation in Python.
 
 ### For Further Exploration
 Downing, Keith L. [*Intelligence Emerging: Adaptivity and Search in Evolving Neural Systems.*](https://mitpress.mit.edu/books/intelligence-emerging) MIT Press, May 2015.  
