@@ -5,7 +5,7 @@
 > This article describes the theory of a neural network quickly and simply. It should be used as one of the first introductory resources. It also includes references to more helpful resources.
 
 [How Deep Neural Networks Work](https://brohrer.github.io/how_neural_networks_work.html)  
-`video` `perceptron` `image processing` `feed forward` `deep NN` `back-propigation` `sigmoid activation function` `ReLU activation function` `gradient descent` `basic NN math` `derivatives` `links to other resources` 
+`introductory` `video` `perceptron` `image processing` `feed forward` `deep NN` `back-propigation` `sigmoid activation function` `ReLU activation function` `gradient descent` `basic NN math` `derivatives` `links to other resources` 
 > This video describes the functions of a very simple neural network. It focuses on a mathematical walkthrough with a pattern of four black and white pixels. It gives the inputs, weights, biases, and functions values. It should be used in conjunction with other introductory resources; not the first introduction.
 
 Heaton, Jeff. [*Introduction to Neural Networks with Java.*](https://www.amazon.com/Introduction-Neural-Networks-Java-2nd/dp/1604390085) 2nd ed., Heaton Research, 1 Oct. 2008.  
