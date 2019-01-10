@@ -41,7 +41,7 @@ Nielsen, Michael. [*Neural Networks and Deep Learning.*](http://neuralnetworksan
 > This playlist of videos introduces the idea of a neural network in the context of plotting input data points and graphs and having the algorithm sort the inputs using an inequality equation. It also includes a tutorial for programming them using Python. It should be used after the student has been introduced to neural networks, but before the difficult mathematical theory.
 
 Fausett, Laurene V. [*Fundamentals of Neural Networks: Architectures, Algorithms And Applications.*](https://www.amazon.com/Fundamentals-Neural-Networks-Architectures-Applications/dp/0133341860) 1st ed., Pearson, 19 Dec. 1993.
-> This book contains examples of neural networks and their various implementations and applications. The first two chapters would probably be most useful for the completion of an initial project.  
+> This book contains examples of neural networks and their various implementations and applications. The first two chapters would probably be most useful for the completion of an initial project. However, I wouldn't recommend using this book alone, since it is somewhat outdated and makes references to topics not covered in the other resources, so it's hard to isolate what is important.  
 - **Introduction**
 - **Simple Neural Nets for Pattern Classification**
 - Pattern Association
