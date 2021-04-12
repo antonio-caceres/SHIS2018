@@ -1,1 +1,1 @@
-Run the FileProcessor.py file in order to generate the pickle files containing the mnist data.
+Run FileProcessor.py to generate the pickle files containing the mnist data.
