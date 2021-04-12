@@ -2,7 +2,7 @@ package edu.caceres.introhopfield;
 
 public class HopfieldNetworkTest {
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         boolean[] pattern = {true, false, true, false, true, true};
 
         HopfieldNetwork neuralNet = new HopfieldNetwork(pattern.length);
@@ -13,32 +13,32 @@ public class HopfieldNetworkTest {
 
         System.out.println("RESULTS");
         boolean[] processedPattern = neuralNet.present(pattern);
-        for(int i=0; i<processedPattern.length; i++)
-            System.out.print(BiPolarUtil.boolToBipolar(processedPattern[i]) + " ");
+        for (boolean b : processedPattern)
+            System.out.print(BiPolarUtil.boolToBipolar(b) + " ");
         System.out.println();
 
         boolean[] patternTwo = {false, true, false, true, false, true};
         boolean[] processedPatternTwo = neuralNet.present(patternTwo);
-        for(int i=0; i<processedPatternTwo.length; i++)
-            System.out.print(BiPolarUtil.boolToBipolar(processedPatternTwo[i]) + " ");
+        for (boolean b : processedPatternTwo)
+            System.out.print(BiPolarUtil.boolToBipolar(b) + " ");
         System.out.println();
 
         boolean[] patternThree = {true, false, true, true, true, false};
         boolean[] processedPatternThree = neuralNet.present(patternThree);
-        for(int i=0; i<processedPatternThree.length; i++)
-            System.out.print(BiPolarUtil.boolToBipolar(processedPatternThree[i]) + " ");
+        for (boolean b : processedPatternThree)
+            System.out.print(BiPolarUtil.boolToBipolar(b) + " ");
         System.out.println();
 
         boolean[] patternFour = {false, false, true, false, true, false};
         boolean[] processedPatternFour = neuralNet.present(patternFour);
-        for(int i=0; i<processedPatternFour.length; i++)
-            System.out.print(BiPolarUtil.boolToBipolar(processedPatternFour[i]) + " ");
+        for (boolean b : processedPatternFour)
+            System.out.print(BiPolarUtil.boolToBipolar(b) + " ");
         System.out.println();
 
         boolean[] patternFive = {false, true, false, false, true, true}; // WHY DOES THIS GO TO INVERSE PATTERN ONE AAAAAAAAAAAAAAAAAAAA
         boolean[] processedPatternFive = neuralNet.present(patternFive);
-        for(int i=0; i<processedPatternFive.length; i++)
-            System.out.print(BiPolarUtil.boolToBipolar(processedPatternFive[i]) + " ");
+        for (boolean b : processedPatternFive)
+            System.out.print(BiPolarUtil.boolToBipolar(b) + " ");
         System.out.println();
     }
 }

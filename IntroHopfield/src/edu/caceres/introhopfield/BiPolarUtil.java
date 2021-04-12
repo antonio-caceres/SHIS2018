@@ -10,7 +10,11 @@ public class BiPolarUtil {
         }
     }
 
-    public static double[] boolToBipolar(final boolean b[]) {
+    public static boolean bipolarToBool(final double d) {
+        return d > 0;
+    }
+
+    public static double[] boolToBipolar(final boolean[] b) {
         final double[] result = new double[b.length];
 
         for (int i = 0; i < b.length; i++) {
@@ -20,7 +24,7 @@ public class BiPolarUtil {
         return result;
     }
 
-    public static double[][] boolToBipolar(final boolean b[][]) {
+    public static double[][] boolToBipolar(final boolean[][] b) {
         final double[][] result = new double[b.length][b[0].length];
 
         for (int r = 0; r < b.length; r++) {
@@ -32,15 +36,7 @@ public class BiPolarUtil {
         return result;
     }
 
-    public static boolean bipolarToBool(final double d) {
-        if (d > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public static boolean[] bipolarToBool(final double d[]) {
+    public static boolean[] bipolarToBool(final double[] d) {
         final boolean[] result = new boolean[d.length];
 
         for (int i = 0; i < d.length; i++) {
@@ -50,7 +46,7 @@ public class BiPolarUtil {
         return result;
     }
 
-    public static boolean[][] bipolarToBool(final double d[][]) {
+    public static boolean[][] bipolarToBool(final double[][] d) {
         final boolean[][] result = new boolean[d.length][d[0].length];
 
         for (int r = 0; r < d.length; r++) {
@@ -63,8 +59,9 @@ public class BiPolarUtil {
     }
 
     /**
+     * The binary step activation function.
      *
-     * @param num
+     * @param num the argument to the binary step function.
      * @return 0 if num is negative; 1 if num is positive
      */
     public static double binaryStepFunction(final double num) {

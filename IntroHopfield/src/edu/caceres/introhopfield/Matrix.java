@@ -4,20 +4,17 @@ import java.io.Serializable;
 
 public class Matrix implements Cloneable, Serializable {
 
-    public static Matrix createColumnMatrix(final double input[]) {
-        final double column[][] = new double[input.length][1];
+    public static Matrix createColumnMatrix(final double[] input) {
+        final double[][] column = new double[input.length][1];
         for (int r = 0; r < column.length; r++) {
             column[r][0] = input[r];
         }
         return new Matrix(column);
     }
 
-    public static Matrix createRowMatrix(final double input[]) {
-        final double row[][] = new double[1][input.length];
-        // instead of this, Heaton had some arraycopy method that I didn't understand so I did this instead.
-        for (int c = 0; c < row[0].length; c++) {
-            row[0][c] = input[c];
-        }
+    public static Matrix createRowMatrix(final double[] input) {
+        final double[][] row = new double[1][input.length];
+        System.arraycopy(input, 0, row[0], 0, row[0].length);
         return new Matrix(row);
     }
 
@@ -32,10 +29,10 @@ public class Matrix implements Cloneable, Serializable {
         return result;
     }
 
-    private double matrix[][];
+    private final double[][] matrix;
 
     // creates a new matrix of 1s and -1s from a 2D Array of booleans
-    public Matrix(final boolean sourceMatrix[][]) {
+    public Matrix(final boolean[][] sourceMatrix) {
         this.matrix = new double[sourceMatrix.length][sourceMatrix[0].length];
         for (int r = 0; r < getRows(); r++) {
             for (int c = 0; c < getCols(); c++) {
@@ -49,7 +46,7 @@ public class Matrix implements Cloneable, Serializable {
     }
 
     // creates a new matrix from a 2D array of doubles
-    public Matrix(final double sourceMatrix[][]) {
+    public Matrix(final double[][] sourceMatrix) {
         this.matrix = new double[sourceMatrix.length][sourceMatrix[0].length];
         for (int r = 0; r < getRows(); r++) {
             for (int c = 0; c < getCols(); c++) {
@@ -106,10 +103,9 @@ public class Matrix implements Cloneable, Serializable {
 
     // returns a row matrix of one row of the matrix
     public Matrix getRow(final int row) {
-        final double newMatrix[][] = new double[1][getCols()];
-        for (int col = 0; col < getCols(); col++) {
-            newMatrix[0][col] = this.matrix[row][col];
-        }
+        final double[][] newMatrix = new double[1][getCols()];
+        if (getCols() >= 0)
+            System.arraycopy(this.matrix[row], 0, newMatrix[0], 0, getCols());
         return new Matrix(newMatrix);
     }
 
@@ -138,9 +134,8 @@ public class Matrix implements Cloneable, Serializable {
 
     public boolean equals(final Matrix matrix, int precision) {
 
-        if (precision < 0) {
+        if (precision < 0)
             precision = 0;
-        }
 
         final double test = Math.pow(10.0, precision);
 
@@ -206,18 +201,13 @@ public class Matrix implements Cloneable, Serializable {
 
     @Override
     public String toString() {
-        String matrixString = "";
-        for (int r = 0; r < this.matrix.length; r++) {
+        StringBuilder matrixString = new StringBuilder();
+        for (double[] doubles : this.matrix) {
             for (int c = 0; c < this.matrix[0].length; c++) {
-                matrixString += this.matrix[r][c] + " ";
+                matrixString.append(doubles[c]).append(" ");
             }
-            matrixString += "\n";
+            matrixString.append("\n");
         }
-        return matrixString;
-    }
-
-    @Override
-    public Matrix clone() {
-        return new Matrix(this.matrix);
+        return matrixString.toString();
     }
 }
