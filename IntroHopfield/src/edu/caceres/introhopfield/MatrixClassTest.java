@@ -1,7 +1,5 @@
 package edu.caceres.introhopfield;
 
-import com.sun.org.apache.xerces.internal.dom.NamedNodeMapImpl;
-
 public class MatrixClassTest {
 
     public static void main(String[] args) {

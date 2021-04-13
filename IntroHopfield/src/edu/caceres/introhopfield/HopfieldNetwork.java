@@ -18,7 +18,7 @@ public class HopfieldNetwork {
 
     public boolean[] present(final boolean[] pattern) {
         // the parameter and output are boolean matrices where each false represents 0 and each true represents 1.
-        final boolean output[] = new boolean[pattern.length];
+        final boolean[] output = new boolean[pattern.length];
 
         // convert the input pattern into a matrix with a single row.
         // also convert the boolean values to bipolar(0 --> -1=false, 1 --> 1=true)
@@ -36,11 +36,7 @@ public class HopfieldNetwork {
                     columnMatrix);
 
             // Convert the dot product to either true or false.
-            if (dotProduct > 0) {
-                output[col] = true;
-            } else {
-                output[col] = false;
-            }
+            output[col] = dotProduct > 0;
         }
 
         return output;

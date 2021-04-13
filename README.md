@@ -1,20 +1,50 @@
-# Independent-Study
+# 2018-Independent-Study
 ### Antonio Caceres's Senior Honors Independent Study
-This repository is dedicated to my Senior Honors Independent Study, taking place in the fall semester of the 2018-2019 school year. The Independent Study course gives seniors the opportunity to do an independent research project for course credit.
-In my Independent Study this semester, I will be studying Artificial Neural Networks (ANNs), a type of artificial intelligence and machine learning process. I chose to study ANNs because they are an increasingly popular topic in the field of computer science, and they combine my enthusiasm for math and computer science.
+This repository was used for my Senior Honors Independent Study, which took place in the fall semester of the 2018-2019 
+school year.
+The Independent Study program at Sacred Heart Preparatory gives seniors the opportunity to complete a research project 
+with faculty and off-campus mentor support and receive course credit.
+In my Independent Study, I studied Artificial Neural Networks (ANNs), an implementation of artificial intelligence, 
+specifically machine learning.
 
-Resources.md contains a guide on the resources that I used or have found during this study. Use these resources to repeat the learning process I went through in my study, or to follow up on the study.
+This project was completed between August and December in 2018.
+I also made final edits to the repository in April 2021, primarily to consolidate all related files into the repo.
+
+One of my goals was to create a guide for other students to repeat the learning that I completed in my project.
+The file Resources.md contains a list of resources that I used, and my own feedback from a first glance.
 
 **What is an artificial neural network?**
-In computer science, artificial neural networks are layered systems of nodes designed to imitate the processes of biological brains. There are three types of layers in a neural net: the input layer, the hidden layers, and the output layer. The nodes in the input layer receive inputs given to the network and send those inputs to the first hidden layer. Each node in that hidden layer applies a mathematical function to the value, and sends it to nodes in the next hidden layers, and so on, until reaching the output layer, which simply represents the outputs of the network.
+In computer science, artificial neural networks are layered systems of nodes designed to imitate the processes of 
+biological brains.
+There are three types of layers in a neural net: the input layer, the hidden layers, and the output layer. The nodes in 
+the input layer receive inputs given to the network and send those inputs to the first hidden layer. Each node in that 
+hidden layer applies a mathematical function to the value, and sends it to nodes in the next hidden layers, and so on, 
+until reaching the output layer, which simply represents the outputs of the network.
 
-The most important concept of neural nets is that every connection between nodes has some weight attached to it. The weight determines the impact that the node sending the signal has on the node receiving the signal. The connection either increases, does little to, or decreases the output of the receiving node, depending on whether the weight is positive, close to zero, or negative, respectively.
-The neural network learns by changing these weights. With a certain set of weights, the network is capable of abstraction, explained by Ray Kurzweil in [his Ted Talk](https://youtu.be/PVXQUItNEDQ?t=234). While this abstraction is not *actually* how the neural net makes its decisions, it's a good way to conceptualize what the net is doing.
-   
-Initially, a neural net is given a random set of weights. In order to find a set of weights that gives the outputs we are looking for, there are three types of training.
-During supervised training, the neural network is given the correct output, and compares its output with the correct one. If they don’t match, the network adjusts its weights by a small amount to move closer to the correct output and repeats the process.
-During unsupervised training, there's no 'correct output', and the network learns without any specific goal in mind. One way to implement this is by making the connections between nodes more extreme. Essentially, if the connection is positive, it should be made more positive, and if it is negative, it should be made more negative. This reinforces what the network 'already knows', which helps sort data when programmers don't know what characteristic to sort by.
-During reinforcement training, the network has some quantifiable goal to measure its performance, like score in a video game. There is not necessarily a correct output, but the network has something to work towards. In this training, the network compares the output it chose to the reward or punishment it received to learn what outputs are good or bad in certain situations.
+The most important concept of neural nets is that every connection between nodes has some weight attached to it.
+The weight determines the impact that the node sending the signal has on the node receiving the signal. The connection 
+either increases, does little to, or decreases the output of the receiving node, depending on whether the weight is 
+positive, close to zero, or negative, respectively.
+The neural network learns by changing these weights.
+With a certain set of weights, the network is capable of abstraction, explained by Ray Kurzweil in 
+[his Ted Talk](https://youtu.be/PVXQUItNEDQ?t=234).
+While this abstraction is not *actually* how the neural net makes its decisions, it's a good way to conceptualize 
+what the net is doing.
+
+Initially, a neural net is given a random set of weights. In order to find a set of weights that gives the outputs we 
+are looking for, there are three types of training.
+During supervised training, the neural network is given the correct output, and compares its output with the correct 
+one.
+If they don’t match, the network adjusts its weights by a small amount to move closer to the correct output and repeats 
+the process.
+During unsupervised training, there's no 'correct output', and the network learns without any specific goal in mind. 
+One way to implement this is by making the connections between nodes more extreme. Essentially, if the connection is 
+positive, it should be made more positive, and if it is negative, it should be made more negative. This reinforces 
+what the network 'already knows', which helps sort data when programmers don't know what characteristic to sort by.
+During reinforcement training, the network has some quantifiable goal to measure its performance, like score in a 
+video game. There is not necessarily a correct output, but the network has something to work towards.
+In this training, the network compares the output it chose to the reward or punishment it received to learn what 
+outputs are good or bad in certain situations.
 
 #### Goals for this Independent Study
 Learning Goals for the Independent Study:
@@ -27,7 +57,7 @@ Learning Goals for the Independent Study:
 Guiding Questions:
 * How do neural networks work, and what determines the functions applied in the nodes?
 * What are the different types of neural networks and where do they work best?
-  * What is the difference between feedforward and feedback/recurrent neural networks?
+    * What is the difference between feedforward and feedback/recurrent neural networks?
 * What are some potential applications of neural networks?
 * What kinds of mental labor are humans better at than artificial neural networks?
 

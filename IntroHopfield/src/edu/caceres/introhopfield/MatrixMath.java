@@ -2,7 +2,7 @@ package edu.caceres.introhopfield;
 
 public class MatrixMath {
     public static Matrix deleteRow(final Matrix matrix, final int deleted) {
-        final double newMatrix[][] = new double[matrix.getRows() - 1][matrix.getCols()];
+        final double[][] newMatrix = new double[matrix.getRows() - 1][matrix.getCols()];
         int targetRow = 0;
         for (int r = 0; r < matrix.getRows(); r++) {
             if (r != deleted) {
@@ -16,7 +16,7 @@ public class MatrixMath {
     }
 
     public static Matrix deleteCol(final Matrix matrix, final int deleted) {
-        final double newMatrix[][] = new double[matrix.getRows()][matrix.getCols() - 1];
+        final double[][] newMatrix = new double[matrix.getRows()][matrix.getCols() - 1];
         for (int r = 0; r < matrix.getRows(); r++) {
             int targetCol = 0;
             for (int c = 0; c < matrix.getCols(); c++) {
@@ -65,7 +65,7 @@ public class MatrixMath {
     }
 
     public static Matrix scalarMultiply(final Matrix matrix, final double scalar) {
-        final double result[][] = new double[matrix.getRows()][matrix.getCols()];
+        final double[][] result = new double[matrix.getRows()][matrix.getCols()];
         for (int r = 0; r < matrix.getRows(); r++) {
             for (int c = 0; c < matrix.getCols(); c++) {
                 result[r][c] = matrix.get(r, c) * scalar;
@@ -75,7 +75,7 @@ public class MatrixMath {
     }
 
     public static Matrix scalarDivide(final Matrix matrix, final double scalar) {
-        final double result[][] = new double[matrix.getRows()][matrix.getCols()];
+        final double[][] result = new double[matrix.getRows()][matrix.getCols()];
         for (int r = 0; r < matrix.getRows(); r++) {
             for (int c = 0; c < matrix.getCols(); c++) {
                 result[r][c] = matrix.get(r, c) / scalar;
@@ -109,10 +109,11 @@ public class MatrixMath {
     public static Matrix matrixMultiply(final Matrix a, final Matrix b) {
         if (a.getCols() != b.getRows()) {
             throw new IllegalArgumentException(
-                    "To use ordinary matrix multiplication the number of columns on the first matrix must match the number of rows on the second.");
+                    "To use ordinary matrix multiplication the number of " +
+                            "columns on the first matrix must match the number of rows on the second.");
         }
 
-        final double result[][] = new double[a.getRows()][b.getCols()];
+        final double[][] result = new double[a.getRows()][b.getCols()];
 
         for (int resultRow = 0; resultRow < a.getRows(); resultRow++) {
             for (int resultCol = 0; resultCol < b.getCols(); resultCol++) {
@@ -129,8 +130,7 @@ public class MatrixMath {
     }
 
     public static Matrix transpose(final Matrix input) {
-        final double inverseMatrix[][] = new double[input.getCols()][input
-                .getRows()];
+        final double[][] inverseMatrix = new double[input.getCols()][input.getRows()];
         for (int r = 0; r < input.getRows(); r++) {
             for (int c = 0; c < input.getCols(); c++) {
                 inverseMatrix[c][r] = input.get(r, c);
@@ -145,8 +145,8 @@ public class MatrixMath {
         }
         final double[] v = input.toPackedArray();
         double rtn = 0.0;
-        for (int i = 0; i < v.length; i++) {
-            rtn += Math.pow(v[i], 2);
+        for (double value : v) {
+            rtn += Math.pow(value, 2);
         }
         return Math.sqrt(rtn);
     }
